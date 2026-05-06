@@ -99,7 +99,7 @@ void stampaStorico(Schedule root) {
             root->dataAppuntamento.anno,
             root->dataAppuntamento.ora,
             root->tec->nome,
-            root->req.codice_richiesta);
+            root->req.codice);
     }
 
     stampaStorico(root->right);
@@ -112,7 +112,7 @@ int cercaPerCodice(Schedule root, int codiceTarget) {
         return 0;
     }
 
-    if (root->req.codice_richiesta == codiceTarget) {
+    if (root->req.codice == codiceTarget) {
         printf("Trovato intervento: %d/%d/%d\n",
             root->dataAppuntamento.giorno,
             root->dataAppuntamento.mese,
@@ -130,7 +130,7 @@ int cercaPerCodice(Schedule root, int codiceTarget) {
 void generaReport(Schedule root, int* aperti, int* conclusi) {
     if (root == NULL) return;
 
-    if (root->req.stato == 3){
+    if (root->req.stato == CONCLUSA){
         (*conclusi)++;
     }
     else{
