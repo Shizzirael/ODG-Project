@@ -1,22 +1,32 @@
-#ifndef TECNICO_H
-#define TECNICO_H
+/* 
+File: lucia.h (Modulo di Pianificazione)
+Autore: Lucia Schettino
+Matricola: NF12100025
+Descrizione: Interfaccia per la gestione degli interventi
+             utilizzando un Albero di Ricerca Binaria.
+*/
 
-#include <stdio.h>
-#include <stdbool.h>
+#ifndef LUCIA_H
+#define LUCIA_H
 
-#define MAX_STR 100
+#include "assia-richieste.h"
+#include "fabiana-tecnici.h"
 
-/* Definizione dell'ADT Tecnico */
-typedef struct NodoTecnico {
-    int codice_id;
-    char nome[MAX_STR];
-    char specializzazione[MAX_STR];
-    bool disponibilita;
-    struct NodoTecnico* next; /* Puntatore per la lista */
-} Tecnico;
+// struttura data e ora
+typedef struct {
+    int anno;
+    int mese;
+    int giorno;
+    int ora;
+} Data;
 
-Tecnico* creaTecnico(int id, const char* nome, const char* specializzazione);
+// puntatore alla struttura
+typedef struct node_schedule *Schedule;
 
-Tecnico* cercaTecnicoCompatibile(Tecnico* testaLista, const char* tipologiaProblema);
+// prototipi funzioni
+Schedule creaAlbero();
+int verificaConflitti (Schedule root, Data target);
+Schedule planIntervento(Schedule root, Richiesta req, Tecnico* tec, Data data);
+void stampaStorico(Schedule root);
 
-#endif /* TECNICO_H */
+#endif
