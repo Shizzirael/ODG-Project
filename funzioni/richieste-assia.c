@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "richiesta.h"
+#include "headers/richieste.h"
 
 static const char* statoToString(StatoRichiesta s) {
     switch (s) {
