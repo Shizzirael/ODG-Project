@@ -9,11 +9,12 @@ typedef struct {
     char codice_ID[10];
     char* nome;
     char* specializzazione;
-    bool disponibilità;
+    bool disponibile;
 } Tecnico;
 
 ListaTecnici nuovaLista(); //Funzione per creare una nuova lista di tecnici
 ListaTecnici aggiungiTecnico(ListaTecnici testa, Tecnico* nuovoTecnico); //Funzione che inserisce un nuovo Tecnico in un nuovo nodo della lista e aggiorna la testa
 Tecnico* creaTecnico(); // Funzione per creare un nuovo tecnico. I dati del tecnico vengono inseriti dall'utente.
+void liberaLista(struct nodo_tec* testa); // Funzione per liberare la memoria allocata per la lista dei tecnici
 
 #endif
