@@ -86,13 +86,13 @@ Schedule planIntervento(Schedule root, Richiesta req, Tecnico* tec, Data data) {
     return root;
 } 
 
-// TODO: controlla nomi campi con ASSIA
+
 // Stampa in ordine cronologico gli interventi CONCLUSI
 void stampaStorico(Schedule root) {
     if (root == NULL) return;
     stampaStorico(root->left);
 
-    if (root->req.stato == 3) {
+    if (root->req.stato == CONCLUSA) {
         printf("%02d/%02d/%d %02d:00 | Tecnico: %s | ID: %d\n",
             root->dataAppuntamento.giorno,
             root->dataAppuntamento.mese,
@@ -105,7 +105,7 @@ void stampaStorico(Schedule root) {
     stampaStorico(root->right);
 }
 
-// TODO assia
+
 // Cerca un intervento per codice (deve guardare TUTTI i nodi perché l'albero è ordinato per date non per codici)
 int cercaPerCodice(Schedule root, int codiceTarget) {
     if (root == NULL){
@@ -125,7 +125,7 @@ int cercaPerCodice(Schedule root, int codiceTarget) {
     return cercaPerCodice(root->right, codiceTarget);
 }
 
-//TODO: confrontati con assia sulla corrispondenza dei numeri con gli stati (tipo 3 == concluso)
+
 // Conta interventi aperti e chiusi
 void generaReport(Schedule root, int* aperti, int* conclusi) {
     if (root == NULL) return;
