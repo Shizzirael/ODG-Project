@@ -2,17 +2,32 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "headers/tecnici.h"  //NON HO IDEA SE LINKA CORRETTAMENTE, CONTROLLA POI
+#include "headers/tecnici.h" 
 
 // Definizione della struttura del nodo per la lista dei tecnici
 struct nodo_tec {
-    Tecnico* tecnico; // Dati del tecnico
-    struct nodo_tec* prossimo; // Puntatore al prossimo nodo nella lista
+    Tecnico* tecnico;
+    struct nodo_tec* prossimo; 
 };
+
 
 //Funzione per creare una nuova lista di tecnici
 ListaTecnici nuovaLista() {
-    return NULL;  // La lista è inizialmente vuota
+    return NULL; 
+}
+
+
+// Funzione per convertire l'enum Specializzazione in una stringa
+const char* spec_to_string(Specializzazione spec) 
+{
+     switch(spec) {
+        case IDRAULICO:    return "Idraulico";
+        case ELETTRICISTA: return "Elettricista";
+        case MURATORE:     return "Muratore";
+        case ASCENSORISTA: return "Ascensorista";
+        case GENERICO:     return "Generico";
+        default:           return "Generico";
+    }
 }
 
 
@@ -24,13 +39,13 @@ Tecnico* creaTecnico()
     char buffer_nome[1000];
 
     printf("Aggiungi un tecnico:\n");
-    Tecnico* tec = malloc(sizeof(Tecnico)); // Allocazione dinamica per un nuovo tecnico
-    if(tec == NULL) {                     //controllo se l'allocazione è fallita
+    Tecnico* tec = malloc(sizeof(Tecnico));
+    if(tec == NULL) {                     
         printf("Errore di allocazione memoria\n");
         exit(EXIT_FAILURE);
     }
 
-    //CODICE ID-- RIVEDITI STA FUNZIONE NON HO CAPITO
+    //CODICE ID
     while (1) {
         printf("Codice ID (9 cifre): ");
 
@@ -45,55 +60,42 @@ Tecnico* creaTecnico()
         printf("Errore: l'ID deve essere di esattamente 9 caratteri.\n");
         while (getchar() != '\n');
     }
-    tec->codice_ID = malloc(strlen(buffer_id) + 1);  // Allocazione dinamica per il codice ID
+    tec->codice_ID = malloc(strlen(buffer_id) + 1);  
     if (tec->codice_ID != NULL) {
-        strcpy(tec->codice_ID, buffer_id);                  //copia il contenuto dal buffer_id
+        strcpy(tec->codice_ID, buffer_id);                  
     } else {
         printf("Errore di allocazione memoria\n");
         exit(EXIT_FAILURE);
     }
 
-
     //NOME
     printf("Nome: ");
     fgets(buffer_nome, sizeof(buffer_nome), stdin);
     if (buffer_nome[strlen(buffer_nome) - 1] == '\n') {
-        buffer_nome[strlen(buffer_nome) - 1] = '\0'; // Rimuove il newline alla fine del nome
+        buffer_nome[strlen(buffer_nome) - 1] = '\0'; 
     }
-    tec->nome = malloc(strlen(buffer_nome) + 1);  // Allocazione dinamica per il nome del tecnico
+    tec->nome = malloc(strlen(buffer_nome) + 1); 
     if (tec->nome == NULL) {
         printf("Errore di allocazione memoria\n");
         exit(EXIT_FAILURE);
     }
     strcpy(tec->nome, buffer_nome);
 
-
     //SPECIALIZZAZIONE
-    int scelta;
-    printf("Specializzazione:\n");
-    printf("0) Idraulico, 1) Elettricista, 2) Muratore, 3) Ascensorista, 4) Generico\n");
-    printf("Scelta: ");
-    scanf("%d", &scelta);
-   
-    const char * str_spec; //const perché non viene modificata
-    switch(scelta)  
-     {
-        case 0: str_spec = "Idraulico";     break;
-        case 1: str_spec = "Elettricista";   break;
-        case 2: str_spec = "Muratore";     break;
-        case 3: str_spec = "Ascensorista";  break;
-        case 4: str_spec = "Generico";     break;
-        default:    printf("Scelta non valida, impostazione a 'Generico'\n"); //Se la scelta non è valida, viene impostata la specializzazione a "Generico"
-                str_spec = "Generico";  break;
-    }
-    tec->specializzazione = malloc(strlen(str_spec) + 1);  // Allocazione dinamica per la specializzazione del tecnico
-    if (tec->specializzazione == NULL) {
-        printf("Errore di allocazione memoria\n");
-        exit(EXIT_FAILURE);
-    }
+    Specializzazione scelta;
+    int input;
+    scanf("%d", &input);
+
+    if (input < IDRAULICO || input > GENERICO) {
+        printf("Scelta non valida, impostazione a 'Generico'\n");
+        scelta = GENERICO;
+    } else {
+        scelta = (Specializzazione)input;
+    }   
+    const char* str_spec = spec_to_string(scelta);
+    tec->specializzazione = malloc(strlen(str_spec) + 1);
     strcpy(tec->specializzazione, str_spec);
-
-
+    
     //DISPONIBILITÀ
    printf("Il tecnico è disponibile? (1 per sì, 0 per no): "); //Chiede all'utente un intero che verrà interpretato come booleano
     scanf("%d", &tec->disponibile);
