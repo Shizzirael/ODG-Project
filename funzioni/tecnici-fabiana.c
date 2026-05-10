@@ -7,27 +7,15 @@
 // Definizione della struttura del nodo per la lista dei tecnici
 struct nodo_tec {
     Tecnico* tecnico;
-    struct nodo_tec* prossimo; 
+    int n_richieste;
+    Richiesta* richieste_assegnate;  // lista già implementata in richiesta.c
+    struct nodo_tec* prossimo;
 };
 
 
 //Funzione per creare una nuova lista di tecnici
 ListaTecnici nuovaLista() {
     return NULL; 
-}
-
-
-// Funzione per convertire l'enum Specializzazione in una stringa
-const char* spec_to_string(Specializzazione spec) 
-{
-     switch(spec) {
-        case IDRAULICO:    return "Idraulico";
-        case ELETTRICISTA: return "Elettricista";
-        case MURATORE:     return "Muratore";
-        case ASCENSORISTA: return "Ascensorista";
-        case GENERICO:     return "Generico";
-        default:           return "Generico";
-    }
 }
 
 
@@ -82,18 +70,28 @@ Tecnico* creaTecnico()
     strcpy(tec->nome, buffer_nome);
 
     //SPECIALIZZAZIONE
-    Specializzazione scelta;
-    int input;
-    scanf("%d", &input);
-
-    if (input < IDRAULICO || input > GENERICO) {
-        printf("Scelta non valida, impostazione a 'Generico'\n");
-        scelta = GENERICO;
-    } else {
-        scelta = (Specializzazione)input;
-    }   
-    const char* str_spec = spec_to_string(scelta);
-    tec->specializzazione = malloc(strlen(str_spec) + 1);
+  int scelta;
+    printf("Specializzazione:\n");
+    printf("0) Idraulico, 1) Elettricista, 2) Muratore, 3) Ascensorista, 4) Generico\n");
+    printf("Scelta: ");
+    scanf("%d", &scelta);
+   
+    const char * str_spec; //const perché non viene modificata
+    switch(scelta)  
+     {
+        case 0: str_spec = "Idraulico";     break;
+        case 1: str_spec = "Elettricista";   break;
+        case 2: str_spec = "Muratore";     break;
+        case 3: str_spec = "Ascensorista";  break;
+        case 4: str_spec = "Generico";     break;
+        default:    printf("Scelta non valida, impostazione a 'Generico'\n"); //Se la scelta non è valida, viene impostata la specializzazione a "Generico"
+                str_spec = "Generico";  break;
+    }
+    tec->specializzazione = malloc(strlen(str_spec) + 1);  // Allocazione dinamica per la specializzazione del tecnico
+    if (tec->specializzazione == NULL) {
+        printf("Errore di allocazione memoria\n");
+        exit(EXIT_FAILURE);
+    }
     strcpy(tec->specializzazione, str_spec);
     
     //DISPONIBILITÀ
@@ -137,5 +135,119 @@ void liberaLista(struct nodo_tec* testa) {
 
         // Libera il nodo della lista
         free(temp);
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------
+//FUNZIONI PER ASSEGNARE RICHIESTE AI TECNICI e ORDINARE PER NUMERO RICHIESTE ASSEGNATE
+
+// Rimuove un nodo dalla lista senza liberarlo (serve per reinserirlo ordinato)
+struct nodo_tec* rimuoviNodo(ListaTecnici testa, struct nodo_tec* nodo) {
+    if (testa == NULL ) return testa; //nessuna modifica alla testa se la lista è vuota
+
+    // caso: il nodo da rimuovere è la testa
+    if (testa == nodo) {
+        return testa->prossimo;
+    }
+    //caso: il nodo da rimuovere è in mezzo o alla fine
+    struct nodo_tec* curr = testa;
+    while (curr->prossimo != NULL) {
+        if (curr->prossimo == nodo) {
+            curr->prossimo = nodo->prossimo;
+            nodo->prossimo = NULL;
+            return testa;
+        }
+        curr = curr->prossimo;
+    }
+    return testa; // nodo non trovato, lista invariata
+}
+
+
+// Inserisce un nodo già esistente nella posizione corretta (ordinata per n_richieste)
+ListaTecnici inserisciOrdinato(ListaTecnici testa, struct nodo_tec* nodo) {
+    if (nodo == NULL) return testa;
+
+    // caso: lista vuota o nodo va in testa
+    if (testa == NULL || nodo->n_richieste <= testa->n_richieste) {
+        nodo->prossimo = testa;
+        return nodo;
+    }
+    // caso: nodo va in mezzo o alla fine
+    struct nodo_tec* curr = testa;
+    while (curr->prossimo != NULL &&
+           curr->prossimo->n_richieste <= nodo->n_richieste) {
+        curr = curr->prossimo;
+    }
+    nodo->prossimo = curr->prossimo;
+    curr->prossimo = nodo;
+    return testa;
+}
+
+
+// Cerca un tecnico disponibile con la specializzazione richiesta che abbia meno lavoro
+struct nodo_tec* trovaTecnico(ListaTecnici testa, const char* specializzazione) {
+    struct nodo_tec* curr = testa;
+    struct nodo_tec* migliore = NULL;
+
+    while (curr != NULL) {
+        if (curr->tecnico->disponibile && strcmp(curr->tecnico->specializzazione, specializzazione) == 0) 
+        {
+            if (migliore == NULL || curr->n_richieste < migliore->n_richieste) //controllo se se ha meno richieste assegnate del migliore attuale
+            {
+                migliore = curr;
+            }
+        }
+        curr = curr->prossimo;
+    }
+    return migliore; // Restituisce il tecnico migliore trovato, o NULL se nessuno è disponibile
+}
+
+
+// Assegna una richiesta al tecnico compatibile con meno carico
+ListaTecnici assegnaRichiesta(ListaTecnici testa, const char* specializzazione, Richiesta* r) {
+    if (r == NULL || specializzazione == NULL) return testa;
+
+    struct nodo_tec* tecnico = trovaTecnico(testa, specializzazione);
+    if (tecnico == NULL) {
+        printf("Nessun tecnico disponibile per: %s\n", specializzazione);
+        return testa;
+    }
+
+    inserisciRichiesta(&tecnico->richieste_assegnate, r); //implementata in richiesta.c da assia
+    tecnico->n_richieste++;
+
+    // rimuovi e reinserisci per mantenere la lista ordinata per carico
+    testa = rimuoviNodo(testa, tecnico);
+    testa = inserisciOrdinato(testa, tecnico);
+
+    return testa;
+}
+
+//-------------------------------------------------------------------------------------------------------
+//FUNZIONI PER MONITORARE IL CARICO DI LAVORO DEI TECNICI (STAMPA RICHIESTE ASSEGNATE)
+void monitoraCarico(ListaTecnici testa) {
+    if (testa == NULL) {
+        printf("Nessun tecnico registrato.\n");
+        return;
+    }
+
+    struct nodo_tec* curr = testa;
+    while (curr != NULL) {
+        if (curr->tecnico->disponibile) 
+        {
+            printf("%s  %s  %s  richieste: %d\n",
+                curr->tecnico->codice_ID,
+                curr->tecnico->nome,
+                curr->tecnico->specializzazione,
+                curr->n_richieste);
+            curr = curr->prossimo;
+        }
+        else {
+            printf("%s  %s  %s  (non disponibile)\n",
+                curr->tecnico->codice_ID,
+                curr->tecnico->nome,
+                curr->tecnico->specializzazione);
+            curr = curr->prossimo;
+        }
     }
 }
