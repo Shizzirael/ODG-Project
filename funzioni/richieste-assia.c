@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "richiesta.h"
+ 
 
 static const char* statoToString(StatoRichiesta s) {
     switch (s) {
@@ -14,41 +15,46 @@ static const char* statoToString(StatoRichiesta s) {
     }
 }
  
-static int transisioneValida(StatoRichiesta attuale, StatoRichiesta nuovo) {
-    switch (attuale) {
-        case APERTA:
-            return (nuovo == PIANIFICATA || nuovo == ANNULLATA);
-        case PIANIFICATA:
-            return (nuovo == IN_LAVORAZIONE || nuovo == ANNULLATA);
-        case IN_LAVORAZIONE:
-            return (nuovo == CONCLUSA || nuovo == ANNULLATA);
-        case CONCLUSA:
-            return 0; 
-        case ANNULLATA:
-            return 0; 
-        default:
-            return 0;
+static const char* specializzazioneToString(Specializzazione sp) {
+    switch (sp) {
+        case IDRAULICO:     return "IDRAULICO";
+        case ELETTRICISTA:  return "ELETTRICISTA";
+        case MURATORE:      return "MURATORE";
+        case ASCENSORISTA:  return "ASCENSORISTA";
+        case GENERICO:      return "GENERICO";
+        default:            return "SCONOSCIUTO";
     }
 }
  
 
-Richiesta* creaRichiesta(int codice, const char* area, const char* tipologia,
+static int transisioneValida(StatoRichiesta attuale, StatoRichiesta nuovo) {
+    switch (attuale) {
+        case APERTA:         return (nuovo == PIANIFICATA    || nuovo == ANNULLATA);
+        case PIANIFICATA:    return (nuovo == IN_LAVORAZIONE || nuovo == ANNULLATA);
+        case IN_LAVORAZIONE: return (nuovo == CONCLUSA       || nuovo == ANNULLATA);
+        case CONCLUSA:       return 0;
+        case ANNULLATA:      return 0;
+        default:             return 0;
+    }
+}
+ 
+
+Richiesta* creaRichiesta(int codice, const char* area, Specializzazione tipologia,
                          const char* descrizione, const char* data, int urgenza) {
     Richiesta* nuova = (Richiesta*)malloc(sizeof(Richiesta));
     if (nuova == NULL) return NULL;
  
-    (*nuova).codice  = codice;
-    (*nuova).urgenza = urgenza;
-    (*nuova).stato   = APERTA;
-    (*nuova).next    = NULL;
+    (*nuova).codice     = codice;
+    (*nuova).tipologia  = tipologia;   // enum, assegnazione diretta //
+    (*nuova).urgenza    = urgenza;
+    (*nuova).stato      = APERTA;
+    (*nuova).next       = NULL;
  
     strncpy((*nuova).area,        area,        MAX_STR - 1);
-    strncpy((*nuova).tipologia,   tipologia,   MAX_STR - 1);
     strncpy((*nuova).descrizione, descrizione, MAX_STR - 1);
     strncpy((*nuova).data,        data,        10);
  
     (*nuova).area[MAX_STR - 1]        = '\0';
-    (*nuova).tipologia[MAX_STR - 1]   = '\0';
     (*nuova).descrizione[MAX_STR - 1] = '\0';
     (*nuova).data[10]                 = '\0';
  
@@ -70,7 +76,6 @@ void inserisciRichiesta(Richiesta** testa, Richiesta* nuova) {
     }
     (*temp).next = nuova;
 }
- 
 
 int aggiornaStato(Richiesta* r, StatoRichiesta nuovoStato) {
     if (r == NULL) {
@@ -90,6 +95,7 @@ int aggiornaStato(Richiesta* r, StatoRichiesta nuovoStato) {
     return 1;
 }
  
+
 int aggiornaStatoDaCodice(Richiesta* testa, int codice, StatoRichiesta nuovoStato) {
     Richiesta* temp = testa;
     while (temp != NULL) {
@@ -102,9 +108,9 @@ int aggiornaStatoDaCodice(Richiesta* testa, int codice, StatoRichiesta nuovoStat
     return 0;
 }
  
+
 void menuAggiornaStato(Richiesta* testa) {
-    int codice;
-    int scelta;
+    int codice, scelta;
  
     printf("\n AGGIORNAMENTO STATO RICHIESTA \n");
     printf("Inserisci il codice della richiesta: ");
@@ -119,7 +125,7 @@ void menuAggiornaStato(Richiesta* testa) {
     printf("\nRichiesta trovata:\n");
     stampaDettaglioRichiesta(r);
     printf("Stato attuale: %s\n", statoToString((*r).stato));
-  // qui mostro solo le transizioni che si possono fa//
+ 
     printf("\nSeleziona il nuovo stato:\n");
     if ((*r).stato == APERTA) {
         printf("  1. PIANIFICATA\n");
@@ -138,19 +144,17 @@ void menuAggiornaStato(Richiesta* testa) {
  
     printf("Scelta: ");
     scanf("%d", &scelta);
- //qua invece in base allo stato attuale applico l atransizione//
+ 
     if ((*r).stato == APERTA) {
-        if (scelta == 1) aggiornaStato(r, PIANIFICATA);
+        if      (scelta == 1) aggiornaStato(r, PIANIFICATA);
         else if (scelta == 2) aggiornaStato(r, ANNULLATA);
         else printf("Scelta non valida.\n");
- 
     } else if ((*r).stato == PIANIFICATA) {
-        if (scelta == 1) aggiornaStato(r, IN_LAVORAZIONE);
+        if      (scelta == 1) aggiornaStato(r, IN_LAVORAZIONE);
         else if (scelta == 2) aggiornaStato(r, ANNULLATA);
         else printf("Scelta non valida.\n");
- 
     } else if ((*r).stato == IN_LAVORAZIONE) {
-        if (scelta == 1) aggiornaStato(r, CONCLUSA);
+        if      (scelta == 1) aggiornaStato(r, CONCLUSA);
         else if (scelta == 2) aggiornaStato(r, ANNULLATA);
         else printf("Scelta non valida.\n");
     }
@@ -172,56 +176,91 @@ void stampaDettaglioRichiesta(Richiesta* r) {
     printf("\n");
     printf("Codice     : %d\n",   (*r).codice);
     printf("Area       : %s\n",   (*r).area);
-    printf("Tipologia  : %s\n",   (*r).tipologia);
+    printf("Tipologia  : %s\n",   specializzazioneToString((*r).tipologia));
     printf("Descrizione: %s\n",   (*r).descrizione);
     printf("Data       : %s\n",   (*r).data);
     printf("Urgenza    : %d/5\n", (*r).urgenza);
     printf("Stato      : %s\n",   statoToString((*r).stato));
     printf("\n");
 }
+ 
 
-void stampaRichiesteFiltrate(Richiesta* testa, int filtro, int tipoFiltro) {
+void stampaRichiesteFiltrate(Richiesta* testa, int valore, int tipoFiltro) {
     Richiesta* temp = testa;
-    int trovata = 0;
+    int trovato = 0;
+ 
+    printf("\n RISULTATI RICERCA (FILTRO NUMERICO) \n");
  
     while (temp != NULL) {
-        if (tipoFiltro == FILTRO_STATO && (*temp).stato == (StatoRichiesta)filtro) {
+        int corrisponde = 0;
+ 
+        if (tipoFiltro == FILTRO_STATO && (int)(*temp).stato == valore) {
+            corrisponde = 1;
+        } else if (tipoFiltro == FILTRO_URGENZA && (*temp).urgenza == valore) {
+            corrisponde = 1;
+        }
+ 
+        if (corrisponde) {
             stampaDettaglioRichiesta(temp);
-            trovata = 1;
-        } else if (tipoFiltro == FILTRO_URGENZA && (*temp).urgenza == filtro) {
-            stampaDettaglioRichiesta(temp);
-            trovata = 1;
+            trovato = 1;
         }
         temp = (*temp).next;
     }
  
-    if (!trovata) {
-        printf("Nessuna richiesta trovata con il filtro selezionato.\n");
+    if (!trovato) {
+        printf("Nessuna richiesta trovata per i criteri inseriti.\n");
     }
 }
  
+
 void stampaRichiestePerStringa(Richiesta* testa, const char* valore, int tipoFiltro) {
     if (valore == NULL) return;
  
     Richiesta* temp = testa;
-    int trovata = 0;
+    int trovato = 0;
+ 
+    printf("\n RISULTATI RICERCA (FILTRO TESTUALE) \n");
  
     while (temp != NULL) {
-        if (tipoFiltro == FILTRO_TIPOLOGIA && strcmp((*temp).tipologia, valore) == 0) {
+        int corrisponde = 0;
+ 
+        if (tipoFiltro == FILTRO_AREA && strcmp((*temp).area, valore) == 0) {
+            corrisponde = 1;
+        }
+ 
+        if (corrisponde) {
             stampaDettaglioRichiesta(temp);
-            trovata = 1;
-        } else if (tipoFiltro == FILTRO_AREA && strcmp((*temp).area, valore) == 0) {
-            stampaDettaglioRichiesta(temp);
-            trovata = 1;
+            trovato = 1;
         }
         temp = (*temp).next;
     }
  
-    if (!trovata) {
+    if (!trovato) {
         printf("Nessuna richiesta trovata per il valore \"%s\".\n", valore);
     }
 }
  
+void stampaRichiestePerTipologia(Richiesta* testa, Specializzazione tipologia) {
+    Richiesta* temp = testa;
+    int trovato = 0;
+ 
+    printf("\n RISULTATI RICERCA (FILTRO TIPOLOGIA) \n");
+ 
+    while (temp != NULL) {
+        if ((*temp).tipologia == tipologia) {
+            stampaDettaglioRichiesta(temp);
+            trovato = 1;
+        }
+        temp = (*temp).next;
+    }
+ 
+    if (!trovato) {
+        printf("Nessuna richiesta trovata per la tipologia \"%s\".\n",
+               specializzazioneToString(tipologia));
+    }
+}
+ 
+
 void liberaListaRichieste(Richiesta* testa) {
     Richiesta* temp;
     while (testa != NULL) {
@@ -230,3 +269,4 @@ void liberaListaRichieste(Richiesta* testa) {
         free(temp);
     }
 }
+ 
