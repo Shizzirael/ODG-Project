@@ -28,7 +28,9 @@ Schedule creaAlbero();
 int verificaConflitti (Schedule root, Data target);
 Schedule planIntervento(Schedule root, Richiesta req, Tecnico* tec, Data data);
 void stampaStorico(Schedule root);
-int cercaPerCodice(Schedule root, int codiceTarget);
-void generaReport(Schedule root, int* aperti, int* conclusi); //sempre se assia li chiama aperti e conclusi
+int cercaIntervento(Schedule root, int codiceTarget);
+void generaReport(Schedule root, int* aperti, int* conclusi); 
+void tempoMedioCompletamento(Schedule root, int* somma, int* count);
+void trovaTecnicoPiuAttivo(Schedule root);
 
 #endif

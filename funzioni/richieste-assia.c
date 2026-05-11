@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "richiesta.h"
+#include <time.h>
+#include "headers/richieste.h"
  
 
 static const char* statoToString(StatoRichiesta s) {
@@ -91,6 +92,13 @@ int aggiornaStato(Richiesta* r, StatoRichiesta nuovoStato) {
     }
  
     (*r).stato = nuovoStato;
+
+    if (nuovoStato == CONCLUSA) { //modifica fatta da lucia ASSIA CIAO MI SERVIVA PER LA QUESTIONE DEL TEMPO MEDIO SALVA SEMPLICEMENTE ANCHE LA DATA CHIUSURA
+        time_t ora = time(NULL);
+        struct tm* t = localtime(&ora);
+        strftime((*r).data_chiusura, 11, "%d/%m/%Y", t);
+    }
+
     printf("Stato aggiornato con successo: '%s'.\n", statoToString((*r).stato));
     return 1;
 }
@@ -270,3 +278,33 @@ void liberaListaRichieste(Richiesta* testa) {
     }
 }
  
+// CIAO ASSIA la prof vuole anche le aree piu problematiche
+// la funzione scorre la lista e stampa tutte le aree con conteggio
+void areaPiuProblematica(Richiesta* testa) {
+    Richiesta* curr = testa;
+    char aree[100][MAX_STR];
+    int conteggi[100] = {0};
+    int n = 0;
+
+    while (curr != NULL) {
+        int trovata = 0;
+        for (int i = 0; i < n; i++) {
+            if (strcmp(aree[i], curr->area) == 0) {
+                conteggi[i]++;
+                trovata = 1;
+                break;
+            }
+        }
+        if (!trovata && n < 100) {
+            strcpy(aree[n], curr->area);
+            conteggi[n] = 1;
+            n++;
+        }
+        curr = curr->next;
+    }
+
+    printf("\n--- AREE CON PIU' PROBLEMI ---\n");
+    for (int i = 0; i < n; i++) {
+        printf("%s: %d richieste\n", aree[i], conteggi[i]);
+    }
+}

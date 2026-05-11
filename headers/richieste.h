@@ -2,6 +2,7 @@
 #define RICHIESTA_H
  
 #include <stdbool.h>
+#include "tecnici.h"
  
 #define MAX_STR 100
  
@@ -43,6 +44,7 @@ typedef struct NodoRichiesta {
     Specializzazione tipologia;        /* ora e' un enum, non piu' una stringa */
     char             descrizione[MAX_STR];
     char             data[11];         /* Formato GG/MM/AAAA + '\0' */
+    char             data_chiusura[11];
     int              urgenza;          /* Da 1 (bassa) a 5 (alta) */
     StatoRichiesta   stato;
     struct NodoRichiesta* next;
@@ -137,4 +139,10 @@ void stampaRichiestePerStringa(Richiesta* testa, const char* valore, int tipoFil
  */
 void liberaListaRichieste(Richiesta* testa);
  
+// CIAO ASSIA non c'era nell'header ma nel source si, birbantella ora ce l'ho messa
+void stampaRichiestePerTipologia(Richiesta* testa, Specializzazione tipologia);
+
+// CIAO ASSIA la prof vuole anche le aree piu problematiche muah
+void areaPiuProblematica(Richiesta* testa);
+
 #endif /* RICHIESTA_H */

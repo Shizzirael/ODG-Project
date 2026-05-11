@@ -8,7 +8,7 @@
 // struttura nodo
 struct node_schedule {
     Data dataAppuntamento;
-    Richiesta req;   //TODO vedi se assia lo chiama richiesta
+    Richiesta req;
     Tecnico* tec;
     struct node_schedule *left;
     struct node_schedule *right;
@@ -42,6 +42,18 @@ static Schedule creaNodo(Richiesta req, Tecnico* tec, Data data){
         nuovo->right = NULL;
     }
     return nuovo;
+}
+// printa tutti i tecnici che hanno concluso qualcosa nella vita
+static void stampaTecniciConclusi(Schedule root) {
+    if (root == NULL) return;
+
+    stampaTecniciConclusi(root->left);
+
+    if (root->req.stato == CONCLUSA) {
+        printf("- %s\n", root->tec->nome);
+    }
+
+    stampaTecniciConclusi(root->right);
 }
 
 // FUNZIONI PUBBLICHE!!!
@@ -107,7 +119,7 @@ void stampaStorico(Schedule root) {
 
 
 // Cerca un intervento per codice (deve guardare TUTTI i nodi perché l'albero è ordinato per date non per codici)
-int cercaPerCodice(Schedule root, int codiceTarget) {
+int cercaIntervento(Schedule root, int codiceTarget) {
     if (root == NULL){
         return 0;
     }
@@ -119,10 +131,10 @@ int cercaPerCodice(Schedule root, int codiceTarget) {
             root->dataAppuntamento.anno);
         return 1;
     }
-    if (cercaPerCodice(root->left,  codiceTarget)){
+    if (cercaIntervento(root->left,  codiceTarget)){
         return 1;
     }
-    return cercaPerCodice(root->right, codiceTarget);
+    return cercaIntervento(root->right, codiceTarget);
 }
 
 
@@ -139,4 +151,43 @@ void generaReport(Schedule root, int* aperti, int* conclusi) {
 
     generaReport(root->left,  aperti, conclusi);
     generaReport(root->right, aperti, conclusi);
+}
+
+// calcola differenza in giorni tra due date 
+static int giorniTra(const char* d1, const char* d2) {
+    int g1, m1, a1, g2, m2, a2;
+    sscanf(d1, "%d/%d/%d", &g1, &m1, &a1);
+    sscanf(d2, "%d/%d/%d", &g2, &m2, &a2);
+    // approssimazione
+    int tot1 = a1*365 + m1*30 + g1;
+    int tot2 = a2*365 + m2*30 + g2;
+    return tot2 - tot1;
+}
+
+// Calcola il tempo medio di completamento
+void tempoMedioCompletamento(Schedule root, int* somma, int* count) {
+    if (root == NULL) return;
+
+    tempoMedioCompletamento(root->left, somma, count);
+
+    if (root->req.stato == CONCLUSA) {
+        int giorni = giorniTra(root->req.data, root->req.data_chiusura); //TODO dire ad assia di aggiungere la data chiusura
+        if (giorni >= 0) {
+            (*somma) += giorni;
+            (*count)++;
+        }
+    }
+
+    tempoMedioCompletamento(root->right, somma, count);
+}
+
+//chi esce più volte è il più attivo
+void trovaTecnicoPiuAttivo(Schedule root) {
+    if (root == NULL) {
+        printf("Nessun intervento concluso.\n");
+        return;
+    }
+    printf("Tecnici con interventi conclusi:\n");
+    stampaTecniciConclusi(root);
+    printf("(il tecnico che appare piu' volte e' il piu' attivo)\n");
 }
