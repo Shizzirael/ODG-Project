@@ -63,7 +63,8 @@ Richiesta* creaRichiesta(int codice, const char* area, Specializzazione tipologi
     (*nuova).area[MAX_STR - 1]        = '\0';
     (*nuova).descrizione[MAX_STR - 1] = '\0';
     (*nuova).data[10]                 = '\0';
-    (*nuova).data_chiusura[0]         = '\0'; //viene inizializzata a stringa vuota: sara' valorizzata solo quando la richiesta raggiunge lo stato CONCLUSA.
+    (*nuova).data_chiusura[0] = '\0'; //viene inizializzata a stringa vuota: sara' valorizzata solo quando la richiesta raggiunge lo stato CONCLUSA.
+    (*nuova).tecnico[0]       = '\0'; //il tecnico non e' noto al momento della creazione: il campo viene lasciato vuoto e sara' scritto dal modulo di pianificazione quando la richiesta viene assegnata.
  
     return nuova;
 }
@@ -72,7 +73,7 @@ Richiesta* creaRichiesta(int codice, const char* area, Specializzazione tipologi
 //Si sceglie la coda (e non la testa) per mantenere l'ordine cronologico di inserimento: la prima richiesta inserita rimane la prima della lista.
  
 void inserisciRichiesta(Richiesta** testa, Richiesta* nuova) {
-    if (testa == NULL || nuova == NULL) return; /* controllo parametri */
+    if (testa == NULL || nuova == NULL) return; 
  
     // Caso base: lista vuota, il nuovo nodo diventa la testa
     if (*testa == NULL) {
@@ -96,9 +97,7 @@ int aggiornaStato(Richiesta* r, StatoRichiesta nuovoStato) {
     }
  
     if (!transisioneValida((*r).stato, nuovoStato)) {
-        printf("Errore: transizione non permessa da '%s' a '%s'.\n",
-            statoToString((*r).stato),
-            statoToString(nuovoStato));
+        printf("Errore: transizione non permessa da '%s' a '%s'.\n", statoToString((*r).stato), statoToString(nuovoStato));
         return 0;
     }
  
@@ -196,6 +195,17 @@ Richiesta* cercaPerCodice(Richiesta* testa, int codice) {
     return cercaPerCodice((*testa).next, codice); //cerca nel resto
 }
  
+//Ricerca e stampa tutte le richieste con una certa tipologia. Approccio RICORSIVO, coerente con cercaPerCodice.
+// caso base 1: lista vuota -> termina
+// caso base 2: tipologia corrisponde -> stampa il nodo e continua
+// caso ricorsivo: prosegue sul nodo successivo
+void cercaPerTipologia(Richiesta* testa, Specializzazione tipologia) {
+    if (testa == NULL) return;                              //lista esaurita
+    if ((*testa).tipologia == tipologia)                    //tipologia trovata: stampa
+        stampaDettaglioRichiesta(testa);
+    cercaPerTipologia((*testa).next, tipologia);            //prosegue sul resto
+}
+ 
 //Stampa tutti i campi di una singola richiesta. Se data_chiusura e' vuota (richiesta non ancora conclusa), stampa "N/A" al posto della stringa vuota.
 void stampaDettaglioRichiesta(Richiesta* r) {
     if (r == NULL) return; /* niente da stampare */
@@ -206,6 +216,7 @@ void stampaDettaglioRichiesta(Richiesta* r) {
     printf("Descrizione   : %s\n",   (*r).descrizione);
     printf("Data apertura : %s\n",   (*r).data);
     printf("Data chiusura : %s\n",   (*r).data_chiusura[0] != '\0' ? (*r).data_chiusura : "N/A");
+    printf("Tecnico       : %s\n",   (*r).tecnico[0]       != '\0' ? (*r).tecnico       : "Non assegnato"); //se il tecnico non e' ancora stato assegnato, il campo e' vuoto.
     printf("Urgenza       : %d/5\n", (*r).urgenza);
     printf("Stato         : %s\n",   statoToString((*r).stato));
     printf("\n");
@@ -244,7 +255,14 @@ void stampaRichiestePerStringa(Richiesta* testa, const char* valore, TipoFiltro 
  
     while (temp != NULL) {
         //strcmp == 0 significa che le due stringhe sono identiche
-        if (tipoFiltro == FILTRO_AREA && strcmp((*temp).area, valore) == 0) {
+        if (tipoFiltro == FILTRO_AREA    && strcmp((*temp).area,    valore) == 0) {
+            stampaDettaglioRichiesta(temp);
+            trovato = 1;
+        }
+        //FILTRO_TECNICO: confronta il campo tecnico della richiesta con il nome cercato.
+        //Il campo tecnico e' scritto dal modulo di pianificazione al momento dell'assegnazione;
+		//se la richiesta non ha ancora un tecnico assegnato, il campo e' vuoto e non corrisponde mai.
+        if (tipoFiltro == FILTRO_TECNICO && strcmp((*temp).tecnico, valore) == 0) {
             stampaDettaglioRichiesta(temp);
             trovato = 1;
         }
@@ -273,8 +291,7 @@ void stampaRichiestePerTipologia(Richiesta* testa, Specializzazione tipologia) {
 }
  
 //Trova e stampa l'area con il maggior numero di richieste.
-//Algoritmo: due cicli annidati, per ogni nodo i, il ciclo interno conta quante volte
-//compare la stessa area nel resto della lista.
+//Algoritmo: due cicli annidati, per ogni nodo i, il ciclo interno conta quante volte compare la stessa area nel resto della lista.
 //Se il conteggio supera il massimo trovato finora, aggiorniamo il massimo e salviamo il nome dell'area.
 //In caso di parita', viene restituita la prima area incontrata con quel conteggio massimo.
 void areaPiuProblematica(Richiesta* testa) {
