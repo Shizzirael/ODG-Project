@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <ctype.h>
 #include "../headers/tecnici.h" 
 
 // Definizione della struttura del nodo per la lista dei tecnici
@@ -12,25 +13,41 @@ struct nodo_tec {
     struct nodo_tec* prossimo;
 };
 
-
+//_____________________________________________________________________________________________________
 //Funzione per creare una nuova lista di tecnici
 ListaTecnici nuovaLista() {
     return NULL; 
 }
 
-//Funzione per controllare che la stringa ID sia solo cifre
-int is_digits_only(const char *s, size_t n) {
-    if (strlen(s) != n) return 0;
+//_____________________________________________________________________________________________________
+/*
+Controlla che la stringa sia composta solo da cifre e abbia una lunghezza specifica.
+Utilizzata da creaTecnico per validare l'input dell'ID del tecnico.
+Parametri:
+- s: la stringa da controllare
+- n: la lunghezza esatta che la stringa deve avere
+Ritorna:
+- true solo se la stringa è composta solo da cifre e ha la lunghezza n, false altrimenti.
+*/
+bool solo_cifre(const char *s, size_t n) {
+    if (strlen(s) != n) return false;
     for (size_t i = 0; i < n; i++) {
-        if (!isdigit((unsigned char)s[i])) return 0;
+        if (!isdigit((unsigned char)s[i])) return false; //isdigit da ctype.h, controlla se il carattere è una cifra
     }
-    return 1;
+    return true;
 }
 
-// Funzione per creare un nuovo tecnico. I dati del tecnico vengono inseriti dall'utente.
+//_____________________________________________________________________________________________________
+/*
+Crea un nuovo tecnico. I dati del tecnico vengono inseriti dall'utente.
+Utilizzata da aggiungiTecnico per creare un tecnico da inserire nella lista.
+Parametri:
+- Nessuno, ma la funzione richiede input da terminale per i singoli dati del tecnico.
+Ritorna:
+- Un puntatore a Tecnico con i dati inseriti dall'utente, o termina il programma in caso di errore di allocazione.
+*/
 Tecnico* creaTecnico()
 {
-    //Buffer temporanei per leggere input id e nome, con spazio per il terminatore null
     char buffer_id[ID_LEN + 2]; 
     char buffer_nome[1000];
 
@@ -41,7 +58,7 @@ Tecnico* creaTecnico()
         exit(EXIT_FAILURE);
     }
 
-    //CODICE ID
+    //Inserimento del CODICE ID, con rispettivo controllo di validità
     while (1) {
         printf("Codice ID (%d cifre): ", ID_LEN);
 
@@ -52,14 +69,14 @@ Tecnico* creaTecnico()
 
         while (getchar() != '\n'); // flush sempre, in ogni caso
 
-        if(is_digits_only(buffer_id, ID_LEN)) break;
+        if(solo_cifre(buffer_id, ID_LEN)) break;
 
         printf("Errore: l'ID deve essere di esattamente %d cifre numeriche.\n", ID_LEN);
     }
     strncpy(tec->codice_ID, buffer_id, ID_LEN);
     tec->codice_ID[ID_LEN] = '\0';
 
-    //NOME
+    //inserimento del NOME del tecnico, con rimozione del newline finale
     printf("Nome: ");
     fgets(buffer_nome, sizeof(buffer_nome), stdin);
     if (buffer_nome[strlen(buffer_nome) - 1] == '\n') {
@@ -72,7 +89,7 @@ Tecnico* creaTecnico()
     }
     strcpy(tec->nome, buffer_nome);
 
-    //SPECIALIZZAZIONE
+    //inserimento della SPECIALIZZAZIONE, con controllo di validità
   int scelta;
 
 while (1) {
@@ -90,12 +107,12 @@ while (1) {
 
     printf("Errore: inserire un valore tra 0 e 4.\n");
 }
-tec->specializzazione = (Specializzazione)scelta;
+tec->specializzazione = (Specializzazione)scelta; //Specializzazione è un enum in tipi.h
     
-    //DISPONIBILITÀ
+    //inserimento della DISPONIBILITÀ
     int disp_temp;
   while (1) {
-    printf("Il tecnico è disponibile? (1 per sì, 0 per no): "); //Chiede all'utente un intero che verrà interpretato come booleano
+    printf("Il tecnico è disponibile? (1 per sì, 0 per no): ");
     scanf("%d", &disp_temp);
      while (getchar() != '\n'); // flush del buffer
 
@@ -105,30 +122,46 @@ tec->specializzazione = (Specializzazione)scelta;
   }
   tec->disponibile = (disp_temp == 1);
 
-return tec; // Restituisce il tecnico creato
+  // Restituzione finale del tecnico creato con tutti i campi valorizzati correttamente
+return tec;
 }
 
 
-//Funzione che inserisce un nuovo Tecnico in un nuovo nodo della lista e aggiorna la testa
+//_____________________________________________________________________________________________________
+/*  
+Aggiunge un nuovo tecnico alla lista dei tecnici.
+Il nuovo tecnico viene creato tramite la funzione creaTecnico
+Parametri:
+- testa: il nodo iniziale della lista dei tecnici, può essere NULL se la lista è vuota
+Ritorna:
+- Il nuovo nodo creato, che diventa la nuova testa della lista dei tecnici
+*/
 ListaTecnici aggiungiTecnico(ListaTecnici testa)
 {
-    Tecnico* nuovoTecnico = creaTecnico(); //chiama la funzione che alloca e riempie il tecnico
+    Tecnico* nuovoTecnico = creaTecnico();
 
-    struct nodo_tec* nuovo = malloc(sizeof(struct nodo_tec));  // Allocazione dinamica per un nuovo nodo della lista
-    if(nuovo == NULL) {          //Se il puntatore è NULL, l'allocazione è fallita
+    struct nodo_tec* nuovo = malloc(sizeof(struct nodo_tec));
+    if(nuovo == NULL) {  
         printf("Errore di allocazione memoria\n");
         exit(EXIT_FAILURE);
     }                    
-        nuovo->tecnico = nuovoTecnico; //Se l'allocazione è riuscita, inizializza il nuovo nodo
-        nuovo->prossimo = testa; // Il nuovo nodo punta alla vecchia testa della lista
+        nuovo->tecnico = nuovoTecnico;
+        nuovo->prossimo = testa;
         nuovo->n_richieste = 0; // Inizialmente, il nuovo tecnico non ha richieste assegnate
-        nuovo->richieste_assegnate = NULL; // Inizializza la lista delle richieste assegnate a NULL
+        nuovo->richieste_assegnate = NULL;
     
-     return nuovo; // Restituisce il nuovo nodo, che diventa la nuova testa della lista
+     return nuovo;
 }
 
 
-// Funzione per liberare la memoria allocata per la lista dei tecnici
+//_____________________________________________________________________________________________________
+/*  
+Libera la memoria allocata per la lista dei tecnici, inclusi i dati dei tecnici stessi.
+Parametri:
+- testa: il nodo iniziale della lista dei tecnici da liberare, può essere NULL se la lista è vuota
+Ritorna:
+nessun valore, ma la memoria per la lista dei tecnici viene liberata correttamente
+*/
 void liberaLista(struct nodo_tec* testa) {
     struct nodo_tec* temp;
     while (testa != NULL) {
@@ -139,7 +172,7 @@ void liberaLista(struct nodo_tec* testa) {
 
         free(temp->tecnico);
 
-        free(temp); // Libera il nodo della lista
+        free(temp);
     }
 }
 /*CLAUDE SAYS: liberalista non libera richieste assegnate,
@@ -150,9 +183,17 @@ void liberaLista(struct nodo_tec* testa) {
 //-------------------------------------------------------------------------------------------------------
 //FUNZIONI PER ASSEGNARE RICHIESTE AI TECNICI e ORDINARE PER NUMERO RICHIESTE ASSEGNATE
 
-// Rimuove un nodo dalla lista senza liberarlo (serve per reinserirlo ordinato)
-struct nodo_tec* rimuoviNodo(ListaTecnici testa, struct nodo_tec* nodo) {
-    if (testa == NULL ) return testa; //nessuna modifica alla testa se la lista è vuota
+/*  
+Rimuove un nodo dalla lista senza liberarlo
+serve per reinserirlo ordinato dopo aver aggiornato il numero di richieste assegnate
+Parametri:
+- testa: il nodo iniziale della lista dei tecnici, può essere NULL se la lista è vuota
+- nodo: il nodo da rimuovere, deve essere un nodo valido presente nella lista
+Ritorna:
+- La testa della lista aggiornata dopo la rimozione del nodo, o la stessa testa se il nodo non è trovato
+*/
+static struct nodo_tec* rimuoviNodo(ListaTecnici testa, struct nodo_tec* nodo) {
+    if (testa == NULL ) return testa;
 
     // caso: il nodo da rimuovere è la testa
     if (testa == nodo) {
@@ -168,11 +209,20 @@ struct nodo_tec* rimuoviNodo(ListaTecnici testa, struct nodo_tec* nodo) {
         }
         curr = curr->prossimo;
     }
-    return testa; // nodo non trovato, lista invariata
+    return testa; //caso: nodo non trovato, restituisce la testa originale senza modifiche
 }
 
 
-// Inserisce un nodo già esistente nella posizione corretta (ordinata per n_richieste)
+//_____________________________________________________________________________________________________
+/*  
+Inserisce un nodo già esistente nella lista dei tecnici 
+in modo ordinato in base al numero di richieste assegnate.
+Parametri:
+- testa: il nodo iniziale della lista dei tecnici, può essere NULL se la lista è vuota
+- nodo: il nodo da inserire, deve essere un nodo valido con n_richieste aggiornato
+Ritorna:
+- La testa della lista aggiornata dopo l'inserimento del nodo nella posizione corretta
+*/
 ListaTecnici inserisciOrdinato(ListaTecnici testa, struct nodo_tec* nodo) {
     if (nodo == NULL) return testa;
 
@@ -193,7 +243,16 @@ ListaTecnici inserisciOrdinato(ListaTecnici testa, struct nodo_tec* nodo) {
 }
 
 
+//_____________________________________________________________________________________________________
 // Cerca un tecnico disponibile con la specializzazione richiesta che abbia meno lavoro
+/*  
+Cerca un tecnico disponibile con la specializzazione richiesta che abbia meno richieste assegnate.
+Parametri:
+- testa: il nodo iniziale della lista dei tecnici, può essere NULL se la lista è vuota
+- specializzazione: la specializzazione richiesta per l'intervento, deve essere un valore valido dell'enum Specializzazione
+Ritorna:
+- Un puntatore al nodo del tecnico trovato che soddisfa i criteri, o NULL se nessun tecnico disponibile con la specializzazione richiesta è trovato
+*/
 struct nodo_tec* trovaTecnico(ListaTecnici testa, Specializzazione specializzazione) {
     struct nodo_tec* curr = testa;
     struct nodo_tec* migliore = NULL;
@@ -208,9 +267,17 @@ struct nodo_tec* trovaTecnico(ListaTecnici testa, Specializzazione specializzazi
         }
         curr = curr->prossimo;
     }
-    return migliore; // Restituisce il tecnico migliore trovato, o NULL se nessuno è disponibile
+    return migliore;
 }
 
+//_____________________________________________________________________________________________________
+/*  
+Converte una specializzazione in una stringa descrittiva.
+Parametri:
+- spec: un valore dell'enum Specializzazione da convertire, deve essere un valore valido dell'enum Specializzazione
+Ritorna:
+- Un puntatore a una stringa costante che rappresenta la specializzazione, o "Generico" se il valore di spec non è riconosciuto
+*/
 const char* spec_to_string(Specializzazione spec) 
 {
      switch(spec) {
@@ -223,6 +290,8 @@ const char* spec_to_string(Specializzazione spec)
     }
 }
 
+
+//______________________________LUCIA(DA CONTROLLARE_______________________________________________________________________
 // trova il tecnico cercandolo per il suo nome (Aggiunta lucia)
 Tecnico* trovaTecnicoPerNome(ListaTecnici testa, const char* nome) {
     struct nodo_tec* curr = testa;
@@ -234,7 +303,13 @@ Tecnico* trovaTecnicoPerNome(ListaTecnici testa, const char* nome) {
     return NULL;
 }
 
+
+//_____________________________________________________________________________________________________
 // Assegna una richiesta al tecnico compatibile con meno carico
+/*  
+Assegna una richiesta al tecnico compatibile con meno carico, aggiornando la lista dei tecnici di conseguenza.
+Capisci bene che c'è scritto perchè mi sto confondendo...
+*/
 ListaTecnici assegnaRichiesta(ListaTecnici testa, Specializzazione specializzazione, Richiesta* r) {
     if (r == NULL) return testa;
 
@@ -257,8 +332,17 @@ ListaTecnici assegnaRichiesta(ListaTecnici testa, Specializzazione specializzazi
     return testa;
 }
 
+
 //-------------------------------------------------------------------------------------------------------
 //FUNZIONI PER MONITORARE IL CARICO DI LAVORO DEI TECNICI (STAMPA RICHIESTE ASSEGNATE)
+
+/*
+Monitora il carico di lavoro dei tecnici stampando le richieste assegnate a ciascun tecnico.
+Parametri:
+- testa: il nodo iniziale della lista dei tecnici da monitorare, può essere NULL se la lista è vuota
+Ritorna:
+- Nessun valore restituito (void), ma viene prodotto un output a schermo che mostra il carico di lavoro dei tecnici  
+*/
 void monitoraCarico(ListaTecnici testa) {
     if (testa == NULL) {
         printf("Nessun tecnico registrato.\n");
