@@ -309,7 +309,7 @@ ListaTecnici assegnaRichiesta(ListaTecnici testa, Specializzazione specializzazi
 
     struct nodo_tec* tecnico = trovaTecnico(testa, specializzazione);
     if (tecnico == NULL) {
-        printf("Nessun tecnico disponibile per: %s\n", specializzazioneToString(specializzazione));
+        printf("Nessun tecnico disponibile per: %s\n", spec_to_string(specializzazione));
         return testa;
     }
 
@@ -318,14 +318,6 @@ ListaTecnici assegnaRichiesta(ListaTecnici testa, Specializzazione specializzazi
 
     // Crea una copia del nodo per la lista del tecnico
     inserisciRichiesta(&tecnico->richieste_assegnate, r);
-    tecnico->n_richieste++;
-    
-    if (copia == NULL) {
-    printf("Errore: allocazione copia richiesta fallita.\n");
-    return testa;
-    }
-
-    inserisciRichiesta(&tecnico->richieste_assegnate, r); //implementata in richiesta.c da assia
     tecnico->n_richieste++;
 
     // rimuovi e reinserisci per mantenere la lista ordinata per carico

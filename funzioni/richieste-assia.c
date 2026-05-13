@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "richieste.h"
+#include "../headers/richieste.h"
  
 //Queste funzioni traducono i valori enum in stringhe leggibili da stampare a schermo. dato che vengono usate in vari punti del codice
 //è comodo averle come funzioni separate.
