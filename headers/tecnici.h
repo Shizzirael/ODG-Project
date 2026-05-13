@@ -1,3 +1,10 @@
+/* 
+File: tecnici.h (Modulo di gestione dei tecnici)
+Autore: Fabiana Sasso
+Matricola: NF12100245
+Descrizione: Interfaccia per la gestione dei tecnici,
+             utilizzando una lista concatenata.
+*/
 #ifndef TECNICI_H
 #define TECNICI_H //CONTROLLA POI SE SONO LINKATE CORRETTAMENTE CON LE FUNZIONI
 #include "richieste.h"
