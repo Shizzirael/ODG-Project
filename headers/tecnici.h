@@ -121,7 +121,7 @@ Post-condizioni:
 Ritorna:
 - Nessun valore restituito (void), ma la memoria allocata per la lista dei tecnici viene liberata.
 */
-void liberaLista(struct nodo_tec* testa); 
+void liberaLista(ListaTecnici testa);
 
 
 /* _____________________________________________________________________________________________________
@@ -184,6 +184,10 @@ Ritorna:
 - Nessun valore restituito (void), ma viene prodotto un output a schermo che mostra il carico di lavoro dei tecnici.
 */
 void monitoraCarico(ListaTecnici testa) ; 
+
+
+//_________________________________________________________________________________
+struct nodo_tec* trovaTecnico(ListaTecnici testa, Specializzazione specializzazione);
 
 
 //_________________________________________________________________________________

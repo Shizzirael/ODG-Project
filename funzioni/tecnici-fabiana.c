@@ -167,7 +167,9 @@ void liberaLista(struct nodo_tec* testa) {
     while (testa != NULL) {
         temp = testa;
         testa = testa->prossimo;
-        free(temp->tecnico); // rimosso free(temp->tecnico->nome)
+
+        free(temp->tecnico->nome); 
+        free(temp->tecnico);
         free(temp);
     }
 }
@@ -215,7 +217,7 @@ Parametri:
 Ritorna:
 - La testa della lista aggiornata dopo l'inserimento del nodo nella posizione corretta
 */
-ListaTecnici inserisciOrdinato(ListaTecnici testa, struct nodo_tec* nodo) {
+static ListaTecnici inserisciOrdinato(ListaTecnici testa, struct nodo_tec* nodo) {
     if (nodo == NULL) return testa;
 
     // caso: lista vuota o nodo va in testa
@@ -315,14 +317,8 @@ ListaTecnici assegnaRichiesta(ListaTecnici testa, Specializzazione specializzazi
     r->tecnico[MAX_STR - 1] = '\0';
 
     // Crea una copia del nodo per la lista del tecnico
-    Richiesta* copia = creaRichiesta(
-        r->codice,
-        r->area,
-        r->tipologia,
-        r->descrizione,
-        r->data,
-        r->urgenza
-        );
+    inserisciRichiesta(&tecnico->richieste_assegnate, r);
+    tecnico->n_richieste++;
     
     if (copia == NULL) {
     printf("Errore: allocazione copia richiesta fallita.\n");
