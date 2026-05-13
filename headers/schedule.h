@@ -34,5 +34,6 @@ void generaReport(Schedule root, int* aperti, int* conclusi);
 void tempoMedioCompletamento(Schedule root, int* somma, int* count);
 void trovaTecnicoPiuAttivo(Schedule root);
 void interventiPerTipologia(Schedule root);
+void liberaAlbero(Schedule root);
 
 #endif

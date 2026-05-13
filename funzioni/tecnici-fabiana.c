@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "headers/tecnici.h" 
+#include "../headers/tecnici.h" 
 
 // Definizione della struttura del nodo per la lista dei tecnici
 struct nodo_tec {
@@ -221,6 +221,17 @@ const char* spec_to_string(Specializzazione spec)
         case GENERICO:     return "Generico";
         default:           return "Generico";
     }
+}
+
+// trova il tecnico cercandolo per il suo nome (Aggiunta lucia)
+Tecnico* trovaTecnicoPerNome(ListaTecnici testa, const char* nome) {
+    struct nodo_tec* curr = testa;
+    while (curr != NULL) {
+        if (strcmp(curr->tecnico->nome, nome) == 0)
+            return curr->tecnico;
+        curr = curr->prossimo;
+    }
+    return NULL;
 }
 
 // Assegna una richiesta al tecnico compatibile con meno carico

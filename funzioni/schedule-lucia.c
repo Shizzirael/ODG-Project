@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "headers/schedule.h"
+#include "../headers/schedule.h"
 
 
 // NON VISIBILI !!!
@@ -13,6 +13,14 @@ struct node_schedule {
     struct node_schedule *left;
     struct node_schedule *right;
 };
+
+// libera albero
+void liberaAlbero(Schedule root) {
+    if (root == NULL) return;
+    liberaAlbero(root->left);
+    liberaAlbero(root->right);
+    free(root);
+}
 
 // confronta due date
 static int confrontaDate(Data d1, Data d2){

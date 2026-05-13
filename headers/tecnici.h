@@ -32,4 +32,7 @@ ListaTecnici assegnaRichiesta(ListaTecnici testa, Specializzazione specializzazi
 
 void monitoraCarico(ListaTecnici testa) ; // Funzione per monitorare il carico di lavoro dei tecnici (stampa richieste assegnate)
 
+// aggiunta lucia last minute perché serve per cercare i tecnici per il loro nome
+Tecnico* trovaTecnicoPerNome(ListaTecnici testa, const char* nome);
+
 #endif
