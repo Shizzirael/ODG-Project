@@ -167,18 +167,10 @@ void liberaLista(struct nodo_tec* testa) {
     while (testa != NULL) {
         temp = testa;
         testa = testa->prossimo;
-
-        free(temp->tecnico->nome);
-
-        free(temp->tecnico);
-
+        free(temp->tecnico); // rimosso free(temp->tecnico->nome)
         free(temp);
     }
 }
-/*CLAUDE SAYS: liberalista non libera richieste assegnate,
-    se inserisci richiesta alloca memoria, andrebbe liberata prima di free(tempo-tecnico)
-    dipende da come è implementata richiesta.c
-*/
 
 //-------------------------------------------------------------------------------------------------------
 //FUNZIONI PER ASSEGNARE RICHIESTE AI TECNICI e ORDINARE PER NUMERO RICHIESTE ASSEGNATE
@@ -315,12 +307,27 @@ ListaTecnici assegnaRichiesta(ListaTecnici testa, Specializzazione specializzazi
 
     struct nodo_tec* tecnico = trovaTecnico(testa, specializzazione);
     if (tecnico == NULL) {
-        printf("Nessun tecnico disponibile per: %s\n", spec_to_string(specializzazione));
+        printf("Nessun tecnico disponibile per: %s\n", specializzazioneToString(specializzazione));
         return testa;
     }
 
-    strncpy(r->tecnico, tecnico->tecnico->nome, MAX_STR - 1); // aggiunto lucia, serve per scrivere il nome del tecnico nella richiesta
+    strncpy(r->tecnico, tecnico->tecnico->nome, MAX_STR - 1);
     r->tecnico[MAX_STR - 1] = '\0';
+
+    // Crea una copia del nodo per la lista del tecnico
+    Richiesta* copia = creaRichiesta(
+        r->codice,
+        r->area,
+        r->tipologia,
+        r->descrizione,
+        r->data,
+        r->urgenza
+        );
+    
+    if (copia == NULL) {
+    printf("Errore: allocazione copia richiesta fallita.\n");
+    return testa;
+    }
 
     inserisciRichiesta(&tecnico->richieste_assegnate, r); //implementata in richiesta.c da assia
     tecnico->n_richieste++;
