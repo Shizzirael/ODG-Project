@@ -6,8 +6,8 @@ Descrizione: Interfaccia per la gestione degli interventi
              utilizzando un Albero di Ricerca Binaria.
 */
 
-#ifndef LUCIA_H
-#define LUCIA_H
+#ifndef SCHEDULE_H
+#define SCHEDULE_H
 
 #include "richieste.h"
 #include "tecnici.h"
@@ -17,7 +17,8 @@ typedef struct {
     int anno;
     int mese;
     int giorno;
-    int ora;
+    int ora_inizio;
+    int ora_fine;
 } Data;
 
 // puntatore alla struttura
@@ -32,5 +33,6 @@ int cercaIntervento(Schedule root, int codiceTarget);
 void generaReport(Schedule root, int* aperti, int* conclusi); 
 void tempoMedioCompletamento(Schedule root, int* somma, int* count);
 void trovaTecnicoPiuAttivo(Schedule root);
+void interventiPerTipologia(Schedule root);
 
 #endif

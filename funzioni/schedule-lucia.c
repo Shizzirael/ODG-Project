@@ -25,8 +25,11 @@ static int confrontaDate(Data d1, Data d2){
     if(d1.giorno != d2.giorno){
         return (d1.giorno < d2.giorno) ? -1 : 1;
     }
-    if(d1.ora != d2.ora){
-        return (d1.ora < d2.ora) ? -1 : 1;
+    if(d1.ora_fine <= d2.ora_inizio){
+        return -1;
+    }
+    if(d1.ora_inizio >= d2.ora_fine){
+        return 1;
     }
     return 0; //se le date sono uguali ritorna zero pk tutti confronti sono falliti
 }
@@ -43,6 +46,7 @@ static Schedule creaNodo(Richiesta req, Tecnico* tec, Data data){
     }
     return nuovo;
 }
+
 // printa tutti i tecnici che hanno concluso qualcosa nella vita
 static void stampaTecniciConclusi(Schedule root) {
     if (root == NULL) return;
@@ -54,6 +58,14 @@ static void stampaTecniciConclusi(Schedule root) {
     }
 
     stampaTecniciConclusi(root->right);
+}
+
+// conta le richieste per tipologia di intervento
+static void contaPerTipologia(Schedule root, int* conteggi) {
+    if (root == NULL) return;
+    contaPerTipologia(root->left, conteggi);
+    conteggi[(int)root->req.tipologia]++;
+    contaPerTipologia(root->right, conteggi);
 }
 
 // FUNZIONI PUBBLICHE!!!
@@ -85,7 +97,8 @@ int verificaConflitti(Schedule root, Data target){
 // Chi chiama questa funzione nel main deve passare &tecnico oppure un Tecnico* già allocato con malloc. NON passare un Tecnico per valore.
 // Inserisce un intervento nell'albero
 Schedule planIntervento(Schedule root, Richiesta req, Tecnico* tec, Data data) {
-    if (root == NULL) return creaNodo(req, tec, data); // posto trovato!
+    req.stato = PIANIFICATA;
+    if (root == NULL) return creaNodo(req, tec, data);
 
     int risultato = confrontaDate(data, root->dataAppuntamento);
 
@@ -109,7 +122,7 @@ void stampaStorico(Schedule root) {
             root->dataAppuntamento.giorno,
             root->dataAppuntamento.mese,
             root->dataAppuntamento.anno,
-            root->dataAppuntamento.ora,
+            root->dataAppuntamento.ora_fine,
             root->tec->nome,
             root->req.codice);
     }
@@ -191,3 +204,19 @@ void trovaTecnicoPiuAttivo(Schedule root) {
     stampaTecniciConclusi(root);
     printf("(il tecnico che appare piu' volte e' il piu' attivo)\n");
 }
+
+// mostra gli interventi per tipologia (specializzazione del tecnico)
+void interventiPerTipologia(Schedule root) {
+    if (root == NULL) return;
+
+    int conteggi[5] = {0};
+    contaPerTipologia(root, conteggi); // funzione privata
+
+    printf("\n--- INTERVENTI PER TIPOLOGIA ---\n");
+    printf("Idraulico:    %d\n", conteggi[IDRAULICO]);
+    printf("Elettricista: %d\n", conteggi[ELETTRICISTA]);
+    printf("Muratore:     %d\n", conteggi[MURATORE]);
+    printf("Ascensorista: %d\n", conteggi[ASCENSORISTA]);
+    printf("Generico:     %d\n", conteggi[GENERICO]);
+}
+

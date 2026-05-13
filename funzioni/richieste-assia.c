@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "richiesta.h"
+#include "headers/richieste.h"
  
 //Queste funzioni traducono i valori enum in stringhe leggibili da stampare a schermo. dato che vengono usate in vari punti del codice
 //è comodo averle come funzioni separate.
@@ -337,6 +337,9 @@ void areaPiuProblematica(Richiesta* testa) {
     printf("Area: %s  (%d richieste)\n", areaMigliore, maxConteggio);
 }
  
+void stampaRichiestePerTecnico(Richiesta* testa, const char* nomeTecnico) {
+    stampaRichiestePerStringa(testa, nomeTecnico, FILTRO_TECNICO);
+}
  
 void liberaListaRichieste(Richiesta* testa) {
     if (testa == NULL) return;           //caso base: lista vuota

@@ -1,39 +1,12 @@
-#ifndef RICHIESTA_H
-#define RICHIESTA_H
+#ifndef RICHIESTE_H
+#define RICHIESTE_H
  
 #include <stdbool.h>
-#include "tecnici.h"
+#include "tipi.h"
  
 #define MAX_STR 100
  
 //Costanti per i tipoFiltro delle funzioni di stampa //
-#define FILTRO_STATO      1
-#define FILTRO_URGENZA    2
-#define FILTRO_TIPOLOGIA  1
-#define FILTRO_AREA       2
- 
-/* 
- * Enumerazione per la specializzazione del tecnico
- * (usata anche come tipologia di problema nella richiesta)
- */
-typedef enum {
-    IDRAULICO,
-    ELETTRICISTA,
-    MURATORE,
-    ASCENSORISTA,
-    GENERICO
-} Specializzazione;
- 
-/*  
- * Enumerazione per lo stato della richiesta
- * */
-typedef enum {
-    APERTA,
-    PIANIFICATA,
-    IN_LAVORAZIONE,
-    CONCLUSA,
-    ANNULLATA
-} StatoRichiesta;
  
 /* =========================================================
  * Definizione dell'ADT Richiesta (nodo di lista collegata)
@@ -41,11 +14,12 @@ typedef enum {
 typedef struct NodoRichiesta {
     int              codice;
     char             area[MAX_STR];
-    Specializzazione tipologia;        /* ora e' un enum, non piu' una stringa */
+    Specializzazione tipologia;
     char             descrizione[MAX_STR];
-    char             data[11];         /* Formato GG/MM/AAAA + '\0' */
+    char             data[11];
     char             data_chiusura[11];
-    int              urgenza;          /* Da 1 (bassa) a 5 (alta) */
+    char             tecnico[MAX_STR];
+    int              urgenza;
     StatoRichiesta   stato;
     struct NodoRichiesta* next;
 } Richiesta;
@@ -120,7 +94,7 @@ void stampaDettaglioRichiesta(Richiesta* r);
  * Pre-condizioni:        Nessuna (gestisce lista vuota).
  * Post-condizioni:       Output su stdout. Nessuna modifica alla lista.
  */
-void stampaRichiesteFiltrate(Richiesta* testa, int valore, int tipoFiltro);
+void stampaRichiesteFiltrate(Richiesta* testa, int valore, int tipoFiltro); //TODO NOT FOUND
  
 /*
  * Specifica Sintattica:  void stampaRichiestePerStringa(Richiesta*, const char*, int);
@@ -129,7 +103,7 @@ void stampaRichiesteFiltrate(Richiesta* testa, int valore, int tipoFiltro);
  * Pre-condizioni:        valore != NULL.
  * Post-condizioni:       Output su stdout. Nessuna modifica alla lista.
  */
-void stampaRichiestePerStringa(Richiesta* testa, const char* valore, int tipoFiltro);
+void stampaRichiestePerStringa(Richiesta* testa, const char* valore, int tipoFiltro); //TODO NOT FOUND
  
 /*
  * Specifica Sintattica:  void liberaListaRichieste(Richiesta*);
@@ -141,6 +115,9 @@ void liberaListaRichieste(Richiesta* testa);
  
 // CIAO ASSIA non c'era nell'header ma nel source si, birbantella ora ce l'ho messa
 void stampaRichiestePerTipologia(Richiesta* testa, Specializzazione tipologia);
+void cercaEStampaPerCodice(Richiesta* testa, int codice);
+void cercaPerTipologia(Richiesta* testa, Specializzazione tipologia);
+void stampaRichiestePerTecnico(Richiesta* testa, const char* nomeTecnico);
 
 // CIAO ASSIA la prof vuole anche le aree piu problematiche muah
 void areaPiuProblematica(Richiesta* testa);

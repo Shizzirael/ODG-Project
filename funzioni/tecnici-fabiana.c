@@ -233,6 +233,9 @@ ListaTecnici assegnaRichiesta(ListaTecnici testa, Specializzazione specializzazi
         return testa;
     }
 
+    strncpy(r->tecnico, tecnico->tecnico->nome, MAX_STR - 1); // aggiunto lucia, serve per scrivere il nome del tecnico nella richiesta
+    r->tecnico[MAX_STR - 1] = '\0';
+
     inserisciRichiesta(&tecnico->richieste_assegnate, r); //implementata in richiesta.c da assia
     tecnico->n_richieste++;
 

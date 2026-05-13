@@ -1,16 +1,9 @@
 #ifndef TECNICI_H
 #define TECNICI_H //CONTROLLA POI SE SONO LINKATE CORRETTAMENTE CON LE FUNZIONI
 #include "richieste.h"
+#include "tipi.h"
 
 #define ID_LEN 9
-
-typedef enum {
-    IDRAULICO,
-    ELETTRICISTA,
-    MURATORE,
-    ASCENSORISTA,
-    GENERICO
-} Specializzazione;
 
 //Struttura per rappresentare un tecnico con i suoi dati
 typedef struct {    
