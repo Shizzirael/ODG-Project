@@ -67,8 +67,6 @@ void areaPiuProblematica(Richiesta* testa);
  
 void liberaListaRichieste(Richiesta* testa);
  
-t-condizioni:       pq->size == 0.
- 
 void initPQ(PriorityQueue* pq);
 
 int emptyPQ(const PriorityQueue* pq);
