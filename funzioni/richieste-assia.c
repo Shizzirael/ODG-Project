@@ -45,8 +45,7 @@ int transisioneValida(StatoRichiesta attuale, StatoRichiesta nuovo) {
 }
  
  
-Richiesta* creaRichiesta(int codice, const char* area, Specializzazione tipologia,
-                         const char* descrizione, const char* data, int urgenza) {
+Richiesta* creaRichiesta(int codice, const char* area, Specializzazione tipologia, const char* descrizione, const char* data, int urgenza) {
     Richiesta* nuova = (Richiesta*)malloc(sizeof(Richiesta));
     if (nuova == NULL) return NULL;
  
@@ -65,7 +64,8 @@ Richiesta* creaRichiesta(int codice, const char* area, Specializzazione tipologi
     nuova->descrizione[MAX_STR - 1] = '\0';
     nuova->data[10]                 = '\0';
     nuova->data_chiusura[0] = '\0';  //viene inizializzata a stringa vuota: sara' valorizzata solo quando la richiesta raggiunge lo stato CONCLUSA.
-    nuova->tecnico[0] = '\0';      //il tecnico non e' noto al momento della creazione: il campo viene lasciato vuoto e sara' scritto dal modulo di pianificazione quando la richiesta viene assegnata.
+    nuova->tecnico[0] = '\0';      //il tecnico non e' noto al momento della creazione: il campo viene lasciato vuoto e sara' scritto dal modulo 
+	                              //di pianificazione quando la richiesta viene assegnata.
  
     return nuova;
 }
@@ -223,7 +223,7 @@ static void cercaPerTipologiaHelper(Richiesta* testa, Specializzazione tipologia
  
 void cercaPerTipologia(Richiesta* testa, Specializzazione tipologia) {
     int trovato = 0;
-    printf("\n=== RISULTATI RICERCA (FILTRO TIPOLOGIA) ===\n");
+    printf("\n RISULTATI RICERCA (FILTRO TIPOLOGIA) \n");
     cercaPerTipologiaHelper(testa, tipologia, &trovato);
     if (!trovato)
         printf("Nessuna richiesta trovata per la tipologia \"%s\".\n",
@@ -353,7 +353,7 @@ void areaPiuProblematica(Richiesta* testa) {
         i = i->next;
     }
  
-    printf("\n=== AREA PIU' PROBLEMATICA ===\n");
+    printf("\n AREA PIU' PROBLEMATICA \n");
     printf("Area: %s  (%d richieste)\n", areaMigliore, maxConteggio);
 }
  
@@ -362,7 +362,10 @@ void liberaListaRichieste(Richiesta* testa) {
     if (testa == NULL) return;              //caso base: lista vuota
     liberaListaRichieste(testa->next);      //prima libera il resto della lista
     free(testa);                            // poi libera il nodo corrente
-	//Liberare prima la coda garantisce che nessun puntatore venga perso prima della deallocazione.
+	//Si libera prima ricorsivamente il resto della lista e poi il nodo corrente (ordine post-order): 
+	//se si liberasse testa prima della chiamata ricorsiva, testa->next diventerebbe invalido
+    //e non sarebbe piu' possibile raggiungere i nodi successivi. 
+}
 }
  
  //ADT PRIORITY QUEUE -- Max-Heap per urgenza
@@ -374,7 +377,7 @@ static void swap(Richiesta** a, Richiesta** b) {
     *b = tmp;
 }
  
-// upheap: risale dall'indice k verso la radice finche' l'invariante e' rispettato.
+//upheap: risale dall'indice k verso la radice finche' l'invariante e' VIOLATO.
  
 static void upheap(PriorityQueue* pq, int k) {
     while (k > 1 && pq->heap[k/2]->urgenza < pq->heap[k]->urgenza) {
@@ -383,8 +386,8 @@ static void upheap(PriorityQueue* pq, int k) {
     }
 }
  
-//downheap: scende dall'indice k verso le foglie finche' l'invariante e' rispettato.
- 
+//downheap: scende dall'indice k verso le foglie finche' l'invariante e' VIOLATO.
+
 static void downheap(PriorityQueue* pq, int k) {
     int n = pq->size;
     while (2 * k <= n) {           
@@ -453,7 +456,11 @@ Richiesta* peekMax(const PriorityQueue* pq) {
     return pq->heap[1];
 }
  
-// Stampa tutte le richieste in ordine decrescente di urgenza operando su una copia temporanea dell'heap, preservando intatta la struttura originale. 
+//Stampa tutte le richieste in ordine decrescente di urgenza operando su una copia temporanea dell'heap, 
+//preservando intatta la struttura originale. La copia e' superficiale (shallow copy):
+//i puntatori nell'array heap puntano agli stessi oggetti Richiesta dell'originale. Questo e'
+//corretto perche' deleteMax sulla copia riorganizza solo i puntatori nell'array senza liberare memoria. 
+
 void stampaHeap(const PriorityQueue* pq) {
     if (pq == NULL || emptyPQ(pq)) {
         printf("Nessuna richiesta in attesa di elaborazione.\n");
