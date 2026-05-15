@@ -255,5 +255,7 @@ Ritorna:
 */
 void liberaAlbero(Schedule root);
 
+//TODO aggiungi specifiche 
+int aggiornaStatoNelBST(Schedule root, int codice, StatoRichiesta nuovoStato, const char* dataChiusura);
 
 #endif

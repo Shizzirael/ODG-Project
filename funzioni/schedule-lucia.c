@@ -192,7 +192,7 @@ void tempoMedioCompletamento(Schedule root, int* somma, int* count) {
     tempoMedioCompletamento(root->left, somma, count);
 
     if (root->req.stato == CONCLUSA) {
-        int giorni = giorniTra(root->req.data, root->req.data_chiusura); //TODO dire ad assia di aggiungere la data chiusura
+        int giorni = giorniTra(root->req.data, root->req.data_chiusura); 
         if (giorni >= 0) {
             (*somma) += giorni;
             (*count)++;
@@ -228,3 +228,15 @@ void interventiPerTipologia(Schedule root) {
     printf("Generico:     %d\n", conteggi[GENERICO]);
 }
 
+// fa in modo che si aggiorni lo stato della richiesta pianificata e venga effettivamente chiusa
+int aggiornaStatoNelBST(Schedule root, int codice, StatoRichiesta nuovoStato, const char* dataChiusura) {
+    if (root == NULL) return 0;
+    if (root->req.codice == codice) {
+        root->req.stato = nuovoStato;
+        if (nuovoStato == CONCLUSA && dataChiusura != NULL)
+            strncpy(root->req.data_chiusura, dataChiusura, 10);
+        return 1;
+    }
+    if (aggiornaStatoNelBST(root->left,  codice, nuovoStato, dataChiusura)) return 1;
+    return aggiornaStatoNelBST(root->right, codice, nuovoStato, dataChiusura);
+}
