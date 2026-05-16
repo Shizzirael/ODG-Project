@@ -1,6 +1,14 @@
+/* 
+ File:        tipi.h (Modulo di supporto per richieste e tecnici)
+ Autori:      Assuntapia Piccolo,Fabiana Sasso, Lucia Schettino
+ Matricole:   NF12100574, NF12100245, NF12100025
+ Descrizione: Dichiarazione di tipi e enumerazioni comuni utilizzati nei moduli principali del programma, 
+              come la definizione di specializzazioni tecniche, stati delle richieste e tipi di filtro per le ricerche.
+*/
 #ifndef TIPI_H
 #define TIPI_H
 
+//definizione specializzazione usata come campo "tipologia" nella struct Richiesta e come campo "specializzazione" nella struct Tecnico
 typedef enum {
     IDRAULICO,
     ELETTRICISTA,
@@ -9,6 +17,7 @@ typedef enum {
     GENERICO
 } Specializzazione;
 
+//definizione dello stato di una richiesta, usato come campo "stato" nella struct Richiesta
 typedef enum {
     APERTA,
     PIANIFICATA,
@@ -17,6 +26,7 @@ typedef enum {
     ANNULLATA
 } StatoRichiesta;
 
+//definizione dei tipi di filtro per le ricerche, usati come parametro nella funzione stampaRichiesteFiltrate in richieste.h
 typedef enum {
     FILTRO_STATO    = 1,
     FILTRO_URGENZA  = 2,

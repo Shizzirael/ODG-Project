@@ -1,18 +1,19 @@
-/* File:        richieste.h (Modulo di gestione delle Richieste)
-   Autore:      Assuntapia Piccolo
-   Matricola:   NF12100574
-   Descrizione: Interfaccia per la gestione delle richieste di manutenzione
+/*
+ File:          richieste.h (Modulo di gestione delle Richieste)
+ Autore:        Assuntapia Piccolo
+ Matricola:     NF12100574
+ Descrizione:   Interfaccia per la gestione delle richieste di manutenzione
                 utilizzando una lista collegata (Linked List) e una coda
                 a priorita' (Max-Heap per urgenza).
                 La lista mantiene lo storico degli interventi in ordine
                 cronologico di inserimento e supporta ricerche e filtri.
                 L'heap consente di estrarre sempre la richiesta piu' urgente
-                in tempo O(log n). */
+                in tempo O(log n). 
+*/
 			  
 #ifndef RICHIESTE_H
 #define RICHIESTE_H
  
-#include <stdbool.h>
 #include "tipi.h"
  
 #define MAX_STR  100
@@ -38,7 +39,6 @@ typedef struct {
     int        size;               
 } PriorityQueue;
  
-/
 
 /*
 Funzione: creaRichiesta
