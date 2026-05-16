@@ -127,6 +127,31 @@ return tec;
 }
 
 
+//______________________________________________________________________________________________________
+/*
+ Assegna automaticamente le richieste orfane ai tecnici disponibili.
+ Parametri:
+ - tecnici: puntatore alla lista dei tecnici
+ - richieste: puntatore alla lista delle richieste
+ Ritorna:
+- Nessun valore restituito (void), ma le richieste orfane vengono assegnate ai tecnici compatibili
+ */
+static void assegnaRichiesteOrfane(ListaTecnici* tecnici, Richiesta* richieste) {
+    Richiesta* r = richieste;
+    int assegnate = 0;
+
+    while (r != NULL) {
+        if (r->stato == APERTA && r->tecnico[0] == '\0') {
+            *tecnici = assegnaRichiesta(*tecnici, r->tipologia, r);
+            if (r->tecnico[0] != '\0') {
+                assegnate++;
+            }
+        }
+        r = r->next;
+    }
+}
+
+
 //_____________________________________________________________________________________________________
 /*  
 Aggiunge un nuovo tecnico alla lista dei tecnici.
@@ -162,12 +187,12 @@ Parametri:
 Ritorna:
 nessun valore, ma la memoria per la lista dei tecnici viene liberata correttamente
 */
-void liberaLista(struct nodo_tec* testa) {
+void liberaLista(ListaTecnici testa) {
     struct nodo_tec* temp;
     while (testa != NULL) {
         temp = testa;
         testa = testa->prossimo;
-
+        liberaListaRichieste(temp->richieste_assegnate);
         free(temp->tecnico->nome); 
         free(temp->tecnico);
         free(temp);
@@ -238,7 +263,6 @@ static ListaTecnici inserisciOrdinato(ListaTecnici testa, struct nodo_tec* nodo)
 
 
 //_____________________________________________________________________________________________________
-// Cerca un tecnico disponibile con la specializzazione richiesta che abbia meno lavoro
 /*  
 Cerca un tecnico disponibile con la specializzazione richiesta che abbia meno richieste assegnate.
 Parametri:
@@ -247,9 +271,9 @@ Parametri:
 Ritorna:
 - Un puntatore al nodo del tecnico trovato che soddisfa i criteri, o NULL se nessun tecnico disponibile con la specializzazione richiesta è trovato
 */
-struct nodo_tec* trovaTecnico(ListaTecnici testa, Specializzazione specializzazione) {
-    struct nodo_tec* curr = testa;
-    struct nodo_tec* migliore = NULL;
+ListaTecnici trovaTecnico(ListaTecnici testa, Specializzazione specializzazione) {
+    ListaTecnici curr = testa;
+    ListaTecnici migliore = NULL;
 
     while (curr != NULL) {
         if (curr->tecnico->disponibile && curr->tecnico->specializzazione == specializzazione) 
@@ -285,8 +309,15 @@ const char* spec_to_string(Specializzazione spec)
 }
 
 
-//______________________________LUCIA(DA CONTROLLARE_______________________________________________________________________
-// trova il tecnico cercandolo per il suo nome (Aggiunta lucia)
+//_____________________________________________________________________________________________________________
+/*  
+Cerca un tecnico nella lista in base al suo nome.
+Parametri:
+- testa: il nodo iniziale della lista dei tecnici, può essere NULL se la lista è vuota
+- nome: il nome del tecnico da cercare, deve essere una stringa valida
+Ritorna:
+- Un puntatore al nodo del tecnico trovato, o NULL se il tecnico non è trovato
+*/
 Tecnico* trovaTecnicoPerNome(ListaTecnici testa, const char* nome) {
     struct nodo_tec* curr = testa;
     while (curr != NULL) {
@@ -301,15 +332,25 @@ Tecnico* trovaTecnicoPerNome(ListaTecnici testa, const char* nome) {
 //_____________________________________________________________________________________________________
 // Assegna una richiesta al tecnico compatibile con meno carico
 /*  
-Assegna una richiesta al tecnico compatibile con meno carico, aggiornando la lista dei tecnici di conseguenza.
-Capisci bene che c'è scritto perchè mi sto confondendo...
+Assegna una richiesta al tecnico compatibile per specializzazione con meno carico.
+Parametri:
+- testa: il nodo iniziale della lista dei tecnici, può essere NULL se la lista è vuota
+- specializzazione: la specializzazione richiesta per l'intervento, deve essere un valore valido dell'enum Specializzazione in tipi.h
+- r: un puntatore alla richiesta da assegnare, deve essere un puntatore valido a una richiesta che si desidera assegnare
+Ritorna:
+- La lista dei tecnici aggiornata con la richiesta assegnata al tecnico appropriato, o NULL se non è stato possibile assegnare la richiesta a nessun tecnico disponibile
 */
 ListaTecnici assegnaRichiesta(ListaTecnici testa, Specializzazione specializzazione, Richiesta* r) {
     if (r == NULL) return testa;
 
     struct nodo_tec* tecnico = trovaTecnico(testa, specializzazione);
+// se non trova un tecnico con la specializzazione richiesta, prova ad assegnare a un generico
+    if (tecnico == NULL && specializzazione != GENERICO) { 
+        tecnico = trovaTecnico(testa, GENERICO);
+    }
+
     if (tecnico == NULL) {
-        printf("Nessun tecnico disponibile per: %s\n", spec_to_string(specializzazione));
+        printf("Nessun tecnico disponibile per: %s (nemmeno generico)\n", spec_to_string(specializzazione));
         return testa;
     }
 
@@ -364,3 +405,5 @@ void monitoraCarico(ListaTecnici testa) {
         }
     }
 }
+
+

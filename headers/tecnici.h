@@ -187,7 +187,7 @@ void monitoraCarico(ListaTecnici testa) ;
 
 
 //_________________________________________________________________________________
-struct nodo_tec* trovaTecnico(ListaTecnici testa, Specializzazione specializzazione);
+ListaTecnici trovaTecnico(ListaTecnici testa, Specializzazione specializzazione);
 
 
 //_________________________________________________________________________________
