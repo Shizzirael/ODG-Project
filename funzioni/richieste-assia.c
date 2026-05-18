@@ -43,6 +43,13 @@ int transisioneValida(StatoRichiesta attuale, StatoRichiesta nuovo) {
         default:             return 0;
     }
 }
+
+// Converte una data "GG/MM/AAAA" in giorni per confronti cronologici. AGGIUNTA LUCIA
+static int dataInGiorni(const char* data) {
+    int g, m, a;
+    if (sscanf(data, "%d/%d/%d", &g, &m, &a) != 3) return -1;
+    return a * 365 + m * 30 + g;
+}
  
  
 Richiesta* creaRichiesta(int codice, const char* area, Specializzazione tipologia, const char* descrizione, const char* data, int urgenza) {
@@ -108,11 +115,24 @@ int aggiornaStato(Richiesta* r, StatoRichiesta nuovoStato) {
  
    //Se la richiesta viene chiusa, registriamo la data di chiusura. Cosa necessaria per calcolare il tempo medio di completamento nel report finale.
     if (nuovoStato == CONCLUSA) {
+    int g, m, a;
+    while (1) {
         printf("Inserisci la data di chiusura (GG/MM/AAAA): ");
         scanf("%10s", r->data_chiusura);
-        while (getchar() != '\n');  
+        while (getchar() != '\n');
         r->data_chiusura[10] = '\0';
+        if (sscanf(r->data_chiusura, "%d/%d/%d", &g, &m, &a) != 3 ||
+            g < 1 || g > 31 || m < 1 || m > 12 || a < 2000 || a > 2100) {
+            printf("  Formato non valido. Usa GG/MM/AAAA (es. 15/05/2026).\n");
+            continue;
+        }
+        if (dataInGiorni(r->data_chiusura) < dataInGiorni(r->data)) {
+            printf("  Errore: la data di chiusura non puo' essere antecedente alla data di apertura (%s).\n", r->data);
+            continue;
+        }
+        break;
     }
+}
  
     printf("Stato aggiornato con successo: '%s'.\n", statoToString(r->stato));
     return 1;
@@ -365,9 +385,7 @@ void liberaListaRichieste(Richiesta* testa) {
 	//Si libera prima ricorsivamente il resto della lista e poi il nodo corrente (ordine post-order): 
 	//se si liberasse testa prima della chiamata ricorsiva, testa->next diventerebbe invalido
     //e non sarebbe piu' possibile raggiungere i nodi successivi. 
-}
-}
- 
+} 
  //ADT PRIORITY QUEUE -- Max-Heap per urgenza
  
 // Scambia due puntatori nell'array heap. 

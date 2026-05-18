@@ -191,7 +191,7 @@ struct nodo_tec* trovaTecnico(ListaTecnici testa, Specializzazione specializzazi
 
 
 //_________________________________________________________________________________
-// aggiunta lucia last minute perché serve per cercare i tecnici per il loro nome
+// TODO SPECIFICHE aggiunta lucia last minute perché serve per cercare i tecnici per il loro nome
 Tecnico* trovaTecnicoPerNome(ListaTecnici testa, const char* nome);
 
 #endif
