@@ -12,7 +12,7 @@
 Pulisce il buffer di input, rimuovendo eventuali caratteri residui dopo una lettura fallita 
 o per preparare il buffer per la prossima lettura.
 */
-static void flushInput(void);
+void flushInput(void);
 
 /*____________________________________________________________________________________________________
 Funzione:leggiIntero
@@ -33,7 +33,7 @@ Ritorna:
 - 1 se l'input è un intero valido, 
 - 0 altrimenti (in caso di input non valido, il buffer viene pulito per evitare problemi nei successivi input)
 */
-static int leggiIntero(int* dest);
+int leggiIntero(int* dest);
 
 /*____________________________________________________________________________________________________
 Funzione:leggiParola
@@ -55,7 +55,7 @@ Ritorna:
 - Nessun valore restituito (void), ma buf viene popolato con la parola letta se l'input è valido, 
 o con una stringa vuota se l'input non è valido
 */
-static void leggiParola(char* buf, int max);
+void leggiParola(char* buf, int max);
 
 /*____________________________________________________________________________________________________
 Funzione:LeggiRiga
@@ -77,7 +77,7 @@ Ritorna:
 - Nessun valore restituito (void), ma buf viene popolato con la riga letta se l'input è valido,
 o con una stringa vuota se l'input non è valido
 */
-static void leggiRiga(char* buf, int max);
+void leggiRiga(char* buf, int max);
 
 /*____________________________________________________________________________________________________
 Funzione:leggiData
@@ -98,7 +98,7 @@ Ritorna:
 - Nessun valore restituito (void), ma buf viene popolato con la data letta se l'input è valido,
 o con una stringa vuota se l'input non è valido
 */
-static void leggiData(char* buf);
+void leggiData(char* buf);
 
 /*____________________________________________________________________________________________________
 Funzione:prossimoCodice
@@ -117,13 +117,13 @@ Il primo codice generato sarà 1, il secondo 2, e così via.
 Ritorna:
 - Un intero che rappresenta il nuovo codice ID univoco generato, incrementato ad ogni chiamata della funzione (1, 2, 3, ...)
 */
-static int prossimoCodice(void);
+int prossimoCodice(void);
 
 /*____________________________________________________________________________________________________
 Funzione:stampaBanner
 Stampa un banner di benvenuto sullo schermo.
 */
-static void stampaBanner(void);
+void stampaBanner(void);
 
 
 #endif

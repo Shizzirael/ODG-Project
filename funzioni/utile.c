@@ -4,7 +4,7 @@
 #include "../headers/utile.h"
 
 // Svuota il buffer di stdin dopo ogni scanf.
-static void flushInput(void) {
+void flushInput(void) {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
 }
@@ -109,7 +109,7 @@ int prossimoCodice(void) {
 // Stampa un banner di benvenuto all'avvio del programma.
 void stampaBanner(void) {
     printf("\n");
-    printf("------------------------------------------\n");
+    printf("--------------------------------------\n");
     printf("* GESTIONE E MANUTENZIONE CONDOMINIO *\n");
-    printf("------------------------------------------\n");
+    printf("--------------------------------------\n");
 }
