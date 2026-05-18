@@ -1,8 +1,8 @@
-programma: main.o schedule.o richieste.o tecnici.o
-	gcc -Wall -g -std=c99 -o programma main.o schedule.o richieste.o tecnici.o
+gestione_condominio: utile.o schedule.o richieste.o tecnici.o
+	gcc -Wall -g -std=c99 -o gestione_condominio utile.o schedule.o richieste.o tecnici.o
 
-main.o: main.c headers/schedule.h headers/richieste.h headers/tecnici.h headers/tipi.h
-	gcc -Wall -g -std=c99 -c main.c -o main.o
+utile.o: funzioni/utile.c headers/utile.h
+	gcc -Wall -g -std=c99 -c funzioni/utile.c -o utile.o
 
 schedule.o: funzioni/schedule-lucia.c headers/schedule.h
 	gcc -Wall -g -std=c99 -c funzioni/schedule-lucia.c -o schedule.o
@@ -14,4 +14,4 @@ tecnici.o: funzioni/tecnici-fabiana.c headers/tecnici.h headers/tipi.h
 	gcc -Wall -g -std=c99 -c funzioni/tecnici-fabiana.c -o tecnici.o
 
 clean:
-	rm -f *.o programma
+	rm -f *.o gestione_condominio
