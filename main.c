@@ -16,75 +16,7 @@
 #include "headers/richieste.h"
 #include "headers/tecnici.h"
 #include "headers/schedule.h"
-
-// COSE PER L'INPUT
-
-// Svuota il buffer di stdin dopo ogni scanf.
-static void flushInput(void) {
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF);
-}
-
-// Legge un intero; restituisce 1 se a posto.
-static int leggiIntero(int* dest) {
-    if (scanf("%d", dest) != 1) {
-        flushInput();
-        return 0;
-    }
-    flushInput();
-    return 1;
-}
-
-// Legge una singola parola (senza spazi).
-static void leggiParola(char* buf, int max) {
-    char fmt[16];
-    sprintf(fmt, "%%%ds", max - 1);
-    if (scanf(fmt, buf) != 1) buf[0] = '\0';
-    flushInput();
-    buf[max - 1] = '\0';
-}
-
-// Legge una riga intera con gli spazi.
-static void leggiRiga(char* buf, int max) {
-    if (fgets(buf, max, stdin) == NULL) {
-        buf[0] = '\0';
-        return;
-    }
-    //pulisce il buffer da eventuali enter
-    buf[strcspn(buf, "\n")] = '\0';
-}
-
-// Legge e valida una data nel formato GG/MM/AAAA.
-static void leggiData(char* buf) {
-    int g, m, a;
-    while (1) {
-        printf("Data (GG/MM/AAAA): ");
-        leggiParola(buf, 11);
-        if (strlen(buf) == 10 &&
-            sscanf(buf, "%d/%d/%d", &g, &m, &a) == 3 &&
-            g >= 1 && g <= 31 &&
-            m >= 1 && m <= 12 &&
-            a >= 2000 && a <= 2100) {
-            break;
-        }
-        printf("  Formato non valido o data fuori range. Riprova.\n");
-    }
-}
-
-//Genera un codice univoco per le nuove richieste.
-static int prossimoCodice(void) {
-    static int contatore = 1;
-    return contatore++;
-}
-
-// TITOLO PROGRAMMA
-
-static void stampaBanner(void) {
-    printf("\n");
-    printf("******************************************\n");
-    printf("*   GESTIONE E MANUTENZIONE CONDOMINIO   *\n");
-    printf("******************************************\n");
-}
+#include "headers/utile.h"
 
 /*
   Sottomenu 1 - Richieste

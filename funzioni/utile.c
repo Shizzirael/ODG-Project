@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "..headers/utile.h"
+#include <string.h>
+#include "../headers/utile.h"
 
 // Svuota il buffer di stdin dopo ogni scanf.
 static void flushInput(void) {
@@ -17,7 +18,7 @@ Parametri:
 Ritorna:
 - 1 se l'input è un intero valido, 0 altrimenti (in caso di input non valido, il buffer viene pulito per evitare problemi nei successivi input)
 */
-static int leggiIntero(int* dest) {
+int leggiIntero(int* dest) {
     if (scanf("%d", dest) != 1) {
         flushInput();
         return 0;
@@ -36,7 +37,7 @@ Parametri:
 Ritorna:
 - Nessun valore restituito (void), ma buf viene popolato con la parola letta se l'input è valido, o con una stringa vuota se l'input non è valido
 */
-static void leggiParola(char* buf, int max) {
+void leggiParola(char* buf, int max) {
     char fmt[16];
     sprintf(fmt, "%%%ds", max - 1); // Costruisce un formato dinamico per scanf, ad esempio "%99s" per max=100
     if (scanf(fmt, buf) != 1) { // Se l'input non è valido, svuota il buffer e imposta la stringa a vuota
@@ -56,7 +57,7 @@ Parametri:
 Ritorna:
 - Nessun valore restituito (void), ma buf viene popolato con la riga letta se l'input è valido, o con una stringa vuota se l'input non è valido
 */
-static void leggiRiga(char* buf, int max) {
+void leggiRiga(char* buf, int max) {
     if (fgets(buf, max, stdin) == NULL) {
         buf[0] = '\0';
         return;
@@ -73,7 +74,7 @@ Parametri:
 Ritorna:
 - Nessun valore restituito (void), ma buf viene popolato con la data letta se l'input è valido, o con una stringa vuota se l'input non è valido
 */
-static void leggiData(char* buf) {
+void leggiData(char* buf) {
     int g, m, a;
     while (1) {
         printf("Data (GG/MM/AAAA): ");
@@ -99,14 +100,14 @@ Parametri:
 Ritorna:
 - Un intero che rappresenta il codice univoco generato, incrementale ad ogni chiamata (1, 2, 3, ...)
 */
-static int prossimoCodice(void) {
+int prossimoCodice(void) {
     static int contatore = 1;
     return contatore++;
 }
 
 
 // Stampa un banner di benvenuto all'avvio del programma.
-static void stampaBanner(void) {
+void stampaBanner(void) {
     printf("\n");
     printf("------------------------------------------\n");
     printf("* GESTIONE E MANUTENZIONE CONDOMINIO *\n");

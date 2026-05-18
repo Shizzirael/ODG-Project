@@ -384,14 +384,9 @@ void liberaListaRichieste(Richiesta* testa) {
 	//Si libera prima ricorsivamente il resto della lista e poi il nodo corrente (ordine post-order): 
 	//se si liberasse testa prima della chiamata ricorsiva, testa->next diventerebbe invalido
     //e non sarebbe piu' possibile raggiungere i nodi successivi. 
-<<<<<<< HEAD:funzioni/richieste-assia.c
-} 
- //ADT PRIORITY QUEUE -- Max-Heap per urgenza
-=======
 }
  
->>>>>>> c520d1f14b61dc6700527b53e74df3efd7792ddb:funzioni/richieste.c
- 
+//ADT PRIORITY QUEUE
 //Scambia due puntatori nell'array heap. 
 static void swap(Richiesta** a, Richiesta** b) {
     Richiesta* tmp = *a;

@@ -1,5 +1,5 @@
-gestione_condominio: utile.o schedule.o richieste.o tecnici.o
-	gcc -Wall -g -std=c99 -o gestione_condominio utile.o schedule.o richieste.o tecnici.o
+gestione_condominio: main.o schedule.o richieste.o tecnici.o utile.o
+	gcc -Wall -g -std=c99 -o programma main.o schedule.o richieste.o tecnici.o utile.o
 
 utile.o: funzioni/utile.c headers/utile.h
 	gcc -Wall -g -std=c99 -c funzioni/utile.c -o utile.o
@@ -12,6 +12,9 @@ richieste.o: funzioni/richieste-assia.c headers/richieste.h headers/tipi.h
 
 tecnici.o: funzioni/tecnici-fabiana.c headers/tecnici.h headers/tipi.h
 	gcc -Wall -g -std=c99 -c funzioni/tecnici-fabiana.c -o tecnici.o
+
+utile.o: funzioni/utile.c headers/utile.h
+	gcc -Wall -g -std=c99 -c funzioni/utile.c -o utile.o
 
 clean:
 	rm -f *.o gestione_condominio

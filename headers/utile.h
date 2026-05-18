@@ -5,8 +5,8 @@
  Descrizione: Funzioni di utilità per la gestione dell'input e altre operazioni comuni, 
               utilizzate nei moduli principali del programma.
 */
-#ifndef TIPI_H
-#define TIPI_H
+#ifndef UTILE_H
+#define UTILE_H
 
 /* Funzione:flushInput
 Pulisce il buffer di input, rimuovendo eventuali caratteri residui dopo una lettura fallita 

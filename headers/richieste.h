@@ -39,10 +39,7 @@ typedef struct {
     int        size;
 } PriorityQueue;
  
-<<<<<<< HEAD
-=======
  
->>>>>>> c520d1f14b61dc6700527b53e74df3efd7792ddb
 /*
 Funzione: creaRichiesta
 Alloca in memoria una nuova richiesta con i dati forniti.
