@@ -2,13 +2,19 @@
 
 **TC1**: Verifica della registrazione delle richieste   
 
-**TC2**: Test della registrazione dei tecnici   
+**TC2**: Test della registrazione dei tecnici
+        testa aggiungiTecnico e monitoraCarico in tecnici.c   
 
-**TC3**: Verifica dell'assegnazione corretta   
+**TC3**: Verifica dell'assegnazione corretta  
+        testa assegnaRichiesta e trovaTecnico in tecnici.c  
 
 **TC4**: Test dell'assegnazione con fallback su tecnico GENERICO   
+        testa assegnaRichiesta in tecnici.c (quando non c'è il tecnico specializzato)
 
-**TC5**: Verifica dell'assegnazione fallita per nessun tecnico disponibile   **TC6**: Test della pianificazione interventi senza conflitti   
+**TC5**: Verifica dell'assegnazione fallita per nessun tecnico disponibile  
+        testa assegnaRichiesta in tecnici.c (con lista vuota)
+
+**TC6**: Test della pianificazione interventi senza conflitti   
 
 **TC7**: Verifica della pianificazione con rilevamento conflitti   
 

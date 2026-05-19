@@ -186,12 +186,67 @@ Ritorna:
 void monitoraCarico(ListaTecnici testa) ; 
 
 
-//_________________________________________________________________________________
+/*____________________________________________________________________________________________________
+Funzione: trovaTecnico
+Trova un tecnico compatibile con la specializzazione richiesta e con il minor numero di richieste assegnate.
+
+Parametri:
+- testa: il nodo iniziale della lista dei tecnici
+- specializzazione: la specializzazione richiesta per l'intervento
+
+Pre-condizioni:
+- testa deve essere un puntatore valido a un nodo della lista dei tecnici, o NULL se la lista è vuota.
+- specializzazione deve essere un valore valido dell'enum Specializzazione definito in tipi.h.
+
+Post-condizioni:
+- Viene restituito un puntatore al nodo del tecnico compatibile con la specializzazione richiesta e con il minor numero di richieste assegnate, o NULL se nessun tecnico è disponibile.
+
+Ritorna:
+- Un puntatore al nodo del tecnico trovato, o NULL se nessun tecnico è disponibile.
+*/
 ListaTecnici trovaTecnico(ListaTecnici testa, Specializzazione specializzazione);
 
 
-//_________________________________________________________________________________
-// TODO SPECIFICHE aggiunta lucia last minute perché serve per cercare i tecnici per il loro nome
+/*____________________________________________________________________________________________________
+Funzione: trovaTecnicoPerNome
+Trova un tecnico nella lista dei tecnici in base al nome.
+
+Parametri:
+- testa: il nodo iniziale della lista dei tecnici
+- nome: il nome del tecnico da cercare
+
+Pre-condizioni:
+- testa deve essere un puntatore valido a un nodo della lista dei tecnici, o NULL se la lista è vuota.
+- nome deve essere un puntatore valido a una stringa che rappresenta il nome del tecnico da cercare.
+
+Post-condizioni:
+- Viene restituito un puntatore al nodo del tecnico con il nome corrispondente, o NULL se nessun tecnico con quel nome è presente nella lista.
+
+Ritorna:
+- Un puntatore al nodo del tecnico trovato, o NULL se nessun tecnico con quel nome è presente nella lista.
+
+*/
 Tecnico* trovaTecnicoPerNome(ListaTecnici testa, const char* nome);
 
+
+/*____________________________________________________________________________________________________
+Funzione: aggiungiTecnicoDirecto
+aggiunge un tecnico diretto alla lista dei tecnici, senza richiedere l'inserimento da terminale, utilizzando i dati già presenti in un puntatore a Tecnico.
+
+Parametri:
+- testa: il nodo iniziale della lista dei tecnici
+- t: un puntatore a un tecnico già creato e con i dati inizializzati
+
+Pre-condizioni:
+- testa deve essere un puntatore valido a un nodo della lista dei tecnici, o NULL se la lista è vuota.
+- t deve essere un puntatore valido a una struttura Tecnico con i campi valorizzati.
+- Il tecnico t deve essere compatibile con la struttura dei tecnici gestiti nella lista (ad esempio, deve avere un codice ID valido, un nome, una specializzazione e una disponibilità).
+
+Post-condizioni:
+- Viene creato un nuovo nodo nella lista dei tecnici che contiene il tecnico t, e questo nuovo nodo diventa la nuova testa della lista.
+
+Ritorna:
+- Il nuovo nodo creato con il tecnico t, che diventa la nuova testa della lista dei tecnici.
+*/
+ListaTecnici aggiungiTecnicoDirecto(ListaTecnici testa, Tecnico* t);
 #endif

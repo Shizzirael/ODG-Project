@@ -406,4 +406,26 @@ void monitoraCarico(ListaTecnici testa) {
     }
 }
 
+//-------------------------------------------------------------------------------------------------------
+/*FUNZIONE DI SUPPORTO PER IL TESTING: AGGIUNGE UN TECNICO GIA' CREATO ALLA LISTA
 
+Aggiunge un tecnico già creato alla lista dei tecnici senza richiedere input da terminale, utile per il testing.
+Parametri:
+- testa: il nodo iniziale della lista dei tecnici, può essere NULL se la lista è vuota
+- t: un puntatore a un tecnico già creato, deve essere un puntatore valido a una struttura Tecnico con i campi valorizzati
+Ritorna:
+- Il nuovo nodo creato con il tecnico t, che diventa la nuova testa della lista dei tecnici
+*/
+ListaTecnici aggiungiTecnicoDirecto(ListaTecnici testa, Tecnico* t) {
+    struct nodo_tec* nuovo = malloc(sizeof(struct nodo_tec));
+    if (nuovo == NULL) {
+        printf("Errore di allocazione memoria\n");
+        exit(EXIT_FAILURE);
+    }
+    nuovo->tecnico = t;
+    nuovo->n_richieste = 0;
+    nuovo->richieste_assegnate = NULL;
+    nuovo->prossimo = testa;
+
+return nuovo;
+}

@@ -16,5 +16,11 @@ tecnici.o: funzioni/tecnici.c headers/tecnici.h headers/tipi.h
 utile.o: funzioni/utile.c headers/utile.h
 	gcc -Wall -g -std=c99 -c funzioni/utile.c -o utile.o
 
+test: test.c funzioni/richieste.c funzioni/tecnici.c funzioni/schedule.c funzioni/utile.c
+	gcc -Wall -g -std=c99 -o test test.c funzioni/richieste.c funzioni/tecnici.c funzioni/schedule.c funzioni/utile.c
+
+esegui_test: test
+	./test
+
 clean:
 	rm -f *.o programma
