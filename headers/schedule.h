@@ -4,9 +4,6 @@
  Matricola:   NF12100025
  Descrizione: Interfaccia per la gestione degli interventi
               utilizzando un Albero Binario di Ricerca (BST).
-              L'albero e' ordinato per data e fascia oraria:
-              ogni nodo rappresenta un intervento pianificato
-              con il tecnico assegnato e la richiesta associata.
 */
 
 #ifndef SCHEDULE_H
