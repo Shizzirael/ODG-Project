@@ -236,7 +236,7 @@ static void menuTecnici(ListaTecnici* tecnici, Richiesta* richieste) {
 
         switch (scelta) {
             case 1:
-                *tecnici = aggiungiTecnico(*tecnici);
+                *tecnici = aggiungiTecnico(*tecnici, stdin);
                 printf("Tecnico aggiunto con successo.\n");
                 printf("Controllo richieste in attesa compatibili...\n");
                 assegnaRichiesteOrfane(tecnici, richieste);

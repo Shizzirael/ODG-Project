@@ -46,7 +46,7 @@ Parametri:
 Ritorna:
 - Un puntatore a Tecnico con i dati inseriti dall'utente, o termina il programma in caso di errore di allocazione.
 */
-Tecnico* creaTecnico()
+Tecnico* creaTecnico(FILE* f)
 {
     char buffer_id[ID_LEN + 2]; 
     char buffer_nome[1000];
@@ -62,7 +62,7 @@ Tecnico* creaTecnico()
     while (1) {
         printf("Codice ID (%d cifre): ", ID_LEN);
 
-        if (scanf("%10s", buffer_id) != 1) {
+        if (fscanf(f, "%10s", buffer_id) != 1) {
             while (getchar() != '\n');
             continue;
         }
@@ -78,7 +78,7 @@ Tecnico* creaTecnico()
 
     //inserimento del NOME del tecnico, con rimozione del newline finale
     printf("Nome: ");
-    fgets(buffer_nome, sizeof(buffer_nome), stdin);
+    fgets(buffer_nome, sizeof(buffer_nome), f);
     if (buffer_nome[strlen(buffer_nome) - 1] == '\n') {
         buffer_nome[strlen(buffer_nome) - 1] = '\0'; 
     }
@@ -97,7 +97,7 @@ while (1) {
     printf("0) Idraulico, 1) Elettricista, 2) Muratore, 3) Ascensorista, 4) Generico\n");
     printf("Scelta: ");
 
-    if (scanf("%d", &scelta) != 1) {
+    if (fscanf(f, "%d", &scelta) != 1) {
         while (getchar() != '\n');
         continue;
     }
@@ -113,7 +113,7 @@ tec->specializzazione = (Specializzazione)scelta; //Specializzazione è un enum 
     int disp_temp;
   while (1) {
     printf("Il tecnico è disponibile? (1 per sì, 0 per no): ");
-    scanf("%d", &disp_temp);
+    fscanf(f, "%d", &disp_temp);
      while (getchar() != '\n'); // flush del buffer
 
     if (disp_temp==1 || disp_temp==0) break;
@@ -161,9 +161,9 @@ Parametri:
 Ritorna:
 - Il nuovo nodo creato, che diventa la nuova testa della lista dei tecnici
 */
-ListaTecnici aggiungiTecnico(ListaTecnici testa)
+ListaTecnici aggiungiTecnico(ListaTecnici testa, FILE* f)
 {
-    Tecnico* nuovoTecnico = creaTecnico();
+    Tecnico* nuovoTecnico = creaTecnico(f);
 
     struct nodo_tec* nuovo = malloc(sizeof(struct nodo_tec));
     if(nuovo == NULL) {  
@@ -416,7 +416,7 @@ Parametri:
 Ritorna:
 - Il nuovo nodo creato con il tecnico t, che diventa la nuova testa della lista dei tecnici
 */
-ListaTecnici aggiungiTecnicoDirecto(ListaTecnici testa, Tecnico* t) {
+ListaTecnici aggiungiTecnicoDiretto(ListaTecnici testa, Tecnico* t) {
     struct nodo_tec* nuovo = malloc(sizeof(struct nodo_tec));
     if (nuovo == NULL) {
         printf("Errore di allocazione memoria\n");

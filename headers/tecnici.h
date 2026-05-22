@@ -80,7 +80,7 @@ Post-condizioni:
 Ritorna:
 - Un puntatore a un Tecnico con i dati inseriti dall'utente, oppure termina il programma in caso di errore di allocazione della memoria.
 */
-Tecnico* creaTecnico(); 
+Tecnico* creaTecnico(FILE* f); 
 
 
 /*___________________________________________________________________________________________________
@@ -101,7 +101,7 @@ Post-condizioni:
 Ritorna:
 - Il nuovo nodo creato, che diventa la nuova testa della lista dei tecnici.
 */
-ListaTecnici aggiungiTecnico(ListaTecnici testa); 
+ListaTecnici aggiungiTecnico(ListaTecnici testa, FILE* f); 
 
 
 /*____________________________________________________________________________________________________
@@ -230,7 +230,7 @@ Tecnico* trovaTecnicoPerNome(ListaTecnici testa, const char* nome);
 
 
 /*____________________________________________________________________________________________________
-Funzione: aggiungiTecnicoDirecto
+Funzione: aggiungiTecnicoDiretto
 aggiunge un tecnico diretto alla lista dei tecnici, senza richiedere l'inserimento da terminale, utilizzando i dati già presenti in un puntatore a Tecnico.
 
 Parametri:
@@ -248,5 +248,5 @@ Post-condizioni:
 Ritorna:
 - Il nuovo nodo creato con il tecnico t, che diventa la nuova testa della lista dei tecnici.
 */
-ListaTecnici aggiungiTecnicoDirecto(ListaTecnici testa, Tecnico* t);
+ListaTecnici aggiungiTecnicoDiretto(ListaTecnici testa, Tecnico* t);
 #endif
