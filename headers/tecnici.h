@@ -11,6 +11,13 @@
 #include "tipi.h"
 
 #define ID_LEN 9
+//Struttura per rappresentare un tecnico con i suoi dati
+typedef struct {    
+    char codice_ID[ID_LEN + 1];
+    char* nome;
+    Specializzazione specializzazione;
+    bool disponibile;
+} Tecnico;
 
 // Definizione della struttura del nodo per la lista dei tecnici
 struct nodo_tec {
@@ -19,14 +26,6 @@ struct nodo_tec {
     Richiesta* richieste_assegnate;  // lista già implementata in richiesta.c
     struct nodo_tec* prossimo;
 };
-
-//Struttura per rappresentare un tecnico con i suoi dati
-typedef struct {    
-    char codice_ID[ID_LEN + 1];
-    char* nome;
-    Specializzazione specializzazione;
-    bool disponibile;
-} Tecnico;
 
 typedef struct nodo_tec *ListaTecnici; //struttura del nodo per la lista dei tecnici
 
