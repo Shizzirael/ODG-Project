@@ -26,6 +26,7 @@ Compilazione:
 #include "../headers/tecnici.h"
 #include "../headers/schedule.h"
 #include "../headers/utile.h"
+#include "../tests/test_condominio.h"
 
 /* _________________________________________________________________
    HELPER: confrontaFile

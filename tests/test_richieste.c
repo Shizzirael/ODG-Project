@@ -30,11 +30,10 @@ TC11: Verifica della ricerca per codice (richiesta non trovata)
    TC1_oracle.txt:
      Richiesta inserita: codice=1 area=Appartamento_3B stato=APERTA
    ================================================================= */
-static void eseguiTC1(FILE* input, FILE* output) {
+void eseguiTC1(FILE* input, FILE* output) {
     char area[MAX_STR], desc[MAX_STR], data[11];
     int  tipologia, urgenza;
 
-    /* Lettura dei campi dal file di input, uno per riga */
     fscanf(input, "%s",  area);
     fscanf(input, "%d",  &tipologia);
     fscanf(input, "%s",  desc);
@@ -50,7 +49,6 @@ static void eseguiTC1(FILE* input, FILE* output) {
 
         inserisciRichiesta(&lista, r);
 
-        /* Verifichiamo i campi e scriviamo l'esito su output */
         if (r->codice == 1 &&
             strcmp(r->area, area) == 0 &&
             r->stato == APERTA)
@@ -78,7 +76,7 @@ static void eseguiTC1(FILE* input, FILE* output) {
    TC8_oracle.txt:
      STATO AGGIORNATO: PIANIFICATA
    ================================================================= */
-static void eseguiTC8(FILE* input, FILE* output) {
+void eseguiTC8(FILE* input, FILE* output) {
     int codice, nuovoStato;
     fscanf(input, "%d", &codice);
     fscanf(input, "%d", &nuovoStato);
@@ -90,9 +88,6 @@ static void eseguiTC8(FILE* input, FILE* output) {
         if (r == NULL) { fprintf(output, "ERRORE allocazione\n"); return; }
         inserisciRichiesta(&lista, r);
 
-        /* aggiornaStatoDaCodice chiama aggiornaStato internamente.
-           Per CONCLUSA aggiornaStato chiederebbe la data di chiusura
-           via scanf: qui testiamo solo PIANIFICATA, nessun input extra. */
         int ok = aggiornaStatoDaCodice(lista, codice,
                                        (StatoRichiesta)nuovoStato);
         if (ok && r->stato == (StatoRichiesta)nuovoStato) {
@@ -127,7 +122,7 @@ static void eseguiTC8(FILE* input, FILE* output) {
    TC9_oracle.txt:
      TRANSIZIONE NON PERMESSA
    ================================================================= */
-static void eseguiTC9(FILE* input, FILE* output) {
+void eseguiTC9(FILE* input, FILE* output) {
     int codice, nuovoStato;
     fscanf(input, "%d", &codice);
     fscanf(input, "%d", &nuovoStato);
@@ -138,13 +133,12 @@ static void eseguiTC9(FILE* input, FILE* output) {
                                      "Desc", "10/05/2025", 2);
         if (r == NULL) { fprintf(output, "ERRORE allocazione\n"); return; }
 
-        /* Impostiamo lo stato a CONCLUSA direttamente per il setup del test */
+        /* Impostiamo lo stato a CONCLUSA direttamente per il setup */
         r->stato = CONCLUSA;
         strncpy(r->data_chiusura, "20/05/2025", 10);
         r->data_chiusura[10] = '\0';
         inserisciRichiesta(&lista, r);
 
-        /* Tentativo di tornare ad APERTA: deve fallire */
         int ok = aggiornaStatoDaCodice(lista, codice,
                                        (StatoRichiesta)nuovoStato);
         if (!ok)
@@ -168,7 +162,7 @@ static void eseguiTC9(FILE* input, FILE* output) {
    TC10_oracle.txt:
      TROVATA codice=1
    ================================================================= */
-static void eseguiTC10(FILE* input, FILE* output) {
+void eseguiTC10(FILE* input, FILE* output) {
     int codice;
     fscanf(input, "%d", &codice);
 
@@ -201,13 +195,12 @@ static void eseguiTC10(FILE* input, FILE* output) {
    TC11_oracle.txt:
      NON TROVATA
    ================================================================= */
-static void eseguiTC11(FILE* input, FILE* output) {
+void eseguiTC11(FILE* input, FILE* output) {
     int codice;
     fscanf(input, "%d", &codice);
 
     {
         Richiesta* lista = NULL;
-        /* Inseriamo una richiesta con codice diverso da quello cercato */
         Richiesta* r = creaRichiesta(1, "AreaTest", IDRAULICO,
                                      "Desc", "10/05/2025", 2);
         if (r == NULL) { fprintf(output, "ERRORE allocazione\n"); return; }
@@ -222,4 +215,3 @@ static void eseguiTC11(FILE* input, FILE* output) {
         liberaListaRichieste(lista);
     }
 }
-

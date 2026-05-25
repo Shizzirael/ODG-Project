@@ -112,7 +112,7 @@ Post-condizioni:
 Ritorna:
 - Nessun valore restituito (void), ma viene prodotto un output su stdout.
 */
-void stampaStorico(Schedule root);
+void stampaStorico(Schedule root, FILE* out);
 
 
 /*____________________________________________________________________________________________________

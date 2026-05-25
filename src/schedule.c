@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "../headers/schedule.h"
 
 
@@ -121,12 +122,12 @@ Schedule planIntervento(Schedule root, Richiesta req, Tecnico* tec, Data data) {
 
 
 // Stampa in ordine cronologico gli interventi CONCLUSI
-void stampaStorico(Schedule root) {
+void stampaStorico(Schedule root, FILE* out) {
     if (root == NULL) return;
-    stampaStorico(root->left);
+    stampaStorico(root->left, out);
 
     if (root->req.stato == CONCLUSA) {
-        printf("%02d/%02d/%d %02d:00 | Tecnico: %s | ID: %d\n",
+        fprintf(out, "%02d/%02d/%d %02d:00 | Tecnico: %s | ID: %d\n",
             root->dataAppuntamento.giorno,
             root->dataAppuntamento.mese,
             root->dataAppuntamento.anno,
@@ -135,7 +136,7 @@ void stampaStorico(Schedule root) {
             root->req.codice);
     }
 
-    stampaStorico(root->right);
+    stampaStorico(root->right, out);
 }
 
 

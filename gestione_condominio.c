@@ -380,7 +380,7 @@ static void menuPianificazione(Schedule* albero, Richiesta* richieste, ListaTecn
                     if (conclusi == 0)
                         printf("Nessun intervento concluso ancora.\n");
                     else
-                        stampaStorico(*albero);
+                        stampaStorico(*albero, stdout);
                 }
                 break;
 

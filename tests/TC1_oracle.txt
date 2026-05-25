@@ -1,0 +1,1 @@
+Richiesta inserita: codice=1 area=Appartamento_3B stato=APERTA

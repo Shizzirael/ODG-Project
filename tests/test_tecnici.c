@@ -32,19 +32,14 @@ TC5 - Assegnazione fallita (nessun tecnico disponibile)
    TC2_oracle.txt:
      123456789  Mario Rossi  Idraulico  richieste: 0
    ================================================================= */
-static void eseguiTC2(FILE* input, FILE* output) {
+void eseguiTC2(FILE* input, FILE* output) {
     ListaTecnici lista = nuovaLista();
-
-    /* aggiungiTecnico legge direttamente da TC2_input.txt
-       esattamente come se l'utente digitasse da tastiera */
     lista = aggiungiTecnico(lista, input);
 
-    /* verifichiamo che il tecnico sia stato registrato correttamente
-       controllando l'output di monitoraCarico */
-    if (lista != NULL && lista->tecnico != NULL)
+    Tecnico* t = trovaTecnicoPerNome(lista, "Mario Rossi");
+    if (t != NULL)
         fprintf(output, "TECNICO REGISTRATO OK id=%s nome=%s\n",
-                lista->tecnico->codice_ID,
-                lista->tecnico->nome);
+                t->codice_ID, t->nome);
     else
         fprintf(output, "ERRORE registrazione tecnico\n");
 
@@ -72,7 +67,7 @@ static void eseguiTC2(FILE* input, FILE* output) {
    TC3_oracle.txt:
      ASSEGNAZIONE OK tecnico=Mario Rossi
    ================================================================= */
-static void eseguiTC3(FILE* input, FILE* output) {
+void eseguiTC3(FILE* input, FILE* output) {
     char area[MAX_STR], desc[MAX_STR], data[11];
     int  tipologia, urgenza;
 
@@ -97,7 +92,6 @@ static void eseguiTC3(FILE* input, FILE* output) {
     else
         fprintf(output, "ASSEGNAZIONE FALLITA\n");
 
-    free(r);
     liberaLista(lista);
 }
 
@@ -123,7 +117,7 @@ static void eseguiTC3(FILE* input, FILE* output) {
    TC4_oracle.txt:
      ASSEGNAZIONE OK tecnico=Luigi Bianchi
    ================================================================= */
-static void eseguiTC4(FILE* input, FILE* output) {
+void eseguiTC4(FILE* input, FILE* output) {
     char area[MAX_STR], desc[MAX_STR], data[11];
     int  tipologia, urgenza;
 
@@ -150,7 +144,6 @@ static void eseguiTC4(FILE* input, FILE* output) {
     else
         fprintf(output, "ASSEGNAZIONE FALLITA\n");
 
-    free(r);
     liberaLista(lista);
 }
 
@@ -170,7 +163,7 @@ static void eseguiTC4(FILE* input, FILE* output) {
    TC5_oracle.txt:
      NESSUN TECNICO DISPONIBILE
    ================================================================= */
-static void eseguiTC5(FILE* input, FILE* output) {
+void eseguiTC5(FILE* input, FILE* output) {
     char area[MAX_STR], desc[MAX_STR], data[11];
     int  tipologia, urgenza;
 

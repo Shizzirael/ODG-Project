@@ -63,11 +63,11 @@ Tecnico* creaTecnico(FILE* f)
         printf("Codice ID (%d cifre): ", ID_LEN);
 
         if (fscanf(f, "%10s", buffer_id) != 1) {
-            while (getchar() != '\n');
+            while (fgetc(f) != '\n' && !feof(f));
             continue;
         }
 
-        while (getchar() != '\n'); // flush sempre, in ogni caso
+        while (fgetc(f) != '\n' && !feof(f)); // flush sempre, in ogni caso
 
         if(solo_cifre(buffer_id, ID_LEN)) break;
 
@@ -98,10 +98,10 @@ while (1) {
     printf("Scelta: ");
 
     if (fscanf(f, "%d", &scelta) != 1) {
-        while (getchar() != '\n');
+        while (fgetc(f) != '\n' && !feof(f));
         continue;
     }
-    while (getchar() != '\n');
+    while (fgetc(f) != '\n' && !feof(f));
 
     if (scelta >= 0 && scelta <= 4) break;
 
@@ -114,7 +114,7 @@ tec->specializzazione = (Specializzazione)scelta; //Specializzazione è un enum 
   while (1) {
     printf("Il tecnico è disponibile? (1 per sì, 0 per no): ");
     fscanf(f, "%d", &disp_temp);
-     while (getchar() != '\n'); // flush del buffer
+     while (fgetc(f) != '\n' && !feof(f)); // flush del buffer
 
     if (disp_temp==1 || disp_temp==0) break;
     

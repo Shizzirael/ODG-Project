@@ -4,23 +4,25 @@ programma: gestione_condominio.o schedule.o richieste.o tecnici.o utile.o
 gestione_condominio.o: gestione_condominio.c headers/schedule.h headers/richieste.h headers/tecnici.h headers/tipi.h headers/utile.h
 	gcc -Wall -g -std=c99 -c gestione_condominio.c -o gestione_condominio.o
 
-schedule.o: funzioni/schedule.c headers/schedule.h
-	gcc -Wall -g -std=c99 -c funzioni/schedule.c -o schedule.o
+schedule.o: src/schedule.c headers/schedule.h
+	gcc -Wall -g -std=c99 -c src/schedule.c -o schedule.o
 
-richieste.o: funzioni/richieste.c headers/richieste.h headers/tipi.h
-	gcc -Wall -g -std=c99 -c funzioni/richieste.c -o richieste.o
+richieste.o: src/richieste.c headers/richieste.h headers/tipi.h
+	gcc -Wall -g -std=c99 -c src/richieste.c -o richieste.o
 
-tecnici.o: funzioni/tecnici.c headers/tecnici.h headers/tipi.h
-	gcc -Wall -g -std=c99 -c funzioni/tecnici.c -o tecnici.o
+tecnici.o: src/tecnici.c headers/tecnici.h headers/tipi.h
+	gcc -Wall -g -std=c99 -c src/tecnici.c -o tecnici.o
 
-utile.o: funzioni/utile.c headers/utile.h
-	gcc -Wall -g -std=c99 -c funzioni/utile.c -o utile.o
+utile.o: src/utile.c headers/utile.h
+	gcc -Wall -g -std=c99 -c src/utile.c -o utile.o
 
-test: test.c funzioni/richieste.c funzioni/tecnici.c funzioni/schedule.c funzioni/utile.c
-	gcc -Wall -g -std=c99 -o test test.c funzioni/richieste.c funzioni/tecnici.c funzioni/schedule.c funzioni/utile.c
+test: tests/test_main.c tests/test_richieste.c tests/test_tecnici.c tests/test_schedule.c src/richieste.c src/tecnici.c src/schedule.c src/utile.c
+	gcc -Wall -g -std=c99 -o test \
+		tests/test_main.c tests/test_richieste.c tests/test_tecnici.c tests/test_schedule.c \
+		src/richieste.c src/tecnici.c src/schedule.c src/utile.c
 
 esegui_test: test
-	./test
+	cd tests && ../test
 
 clean:
-	rm -f *.o programma
+	rm -f *.o programma test

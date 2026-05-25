@@ -1,0 +1,3 @@
+Aperti: 1
+Conclusi: 1
+Tempo medio: 10 giorni

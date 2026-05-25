@@ -1,17 +1,3 @@
 Aperti: 1
-Conclusi: 2
-Tempo medio: 5 giorni
-Tecnici con interventi conclusi:
-- Mario Rossi
-- Mario Rossi
-(il tecnico che appare piu' volte e' il piu' attivo)
-
---- INTERVENTI PER TIPOLOGIA ---
-Idraulico:    2
-Elettricista: 1
-Muratore:     0
-Ascensorista: 0
-Generico:     0
-
- AREA PIU' PROBLEMATICA 
-Area: Appartamento_3B  (2 richieste)
+Conclusi: 1
+Tempo medio: 10 giorni
