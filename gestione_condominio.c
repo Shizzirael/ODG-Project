@@ -213,7 +213,15 @@ static void menuTecnici(ListaTecnici* tecnici, Richiesta* richieste) {
 
         switch (scelta) {
             case 1:
+                printf("=== AGGIUNGI TECNICO ===\n");
+                printf("Inserisci i seguenti dati (uno per riga):\n");
+                printf("  1. Codice ID (9 cifre numeriche)\n");
+                printf("  2. Nome\n");
+                printf("  3. Specializzazione: 0=Idraulico 1=Elettricista 2=Muratore 3=Ascensorista 4=Generico\n");
+                printf("  4. Disponibile: 1=si 0=no\n");
+
                 *tecnici = aggiungiTecnico(*tecnici, stdin);
+                
                 printf("Tecnico aggiunto con successo.\n");
                 printf("Controllo richieste in attesa compatibili...\n");
                 assegnaRichiesteOrfane(tecnici, richieste);

@@ -27,6 +27,7 @@ Compilazione:
 #include "../headers/schedule.h"
 #include "../headers/utile.h"
 #include "../tests/test_condominio.h"
+#include <unistd.h> //per stdoutfileno che serve a silenziare i printf durante l'esecuzione dei TC
 
 /* =================================================================
    HELPER: confrontaFile
@@ -83,7 +84,13 @@ static void eseguiTC(const char* tcId, const char* fin,
         if (input) fclose(input);
         return;
     }
-    /* input puo' essere NULL per TC senza file di input (TC13) */
+
+    int saved_fd = dup(STDOUT_FILENO); // salva il file descriptor di stdout per poterlo ripristinare dopo
+
+    /* silenzia stdout durante l'esecuzione del TC:
+       i printf delle funzioni del progetto non appaiono a schermo */
+    fflush(stdout);
+    freopen("/dev/null", "w", stdout);
 
     if      (strcmp(tcId, "TC1")  == 0) 
       eseguiTC1(input,  output);
@@ -116,6 +123,11 @@ static void eseguiTC(const char* tcId, const char* fin,
     if (input)  fclose(input);
     fclose(output);
 
+   /* ripristina stdout dal file descriptor salvato */
+    fflush(stdout);
+    dup2(saved_fd, STDOUT_FILENO);
+    close(saved_fd);
+
     if (confrontaFile(fout, foracle)) {
         fprintf(result, "%s PASS\n", tcId);
         printf("Eseguito %s -> PASS\n", tcId);
@@ -139,45 +151,30 @@ static void eseguiTC(const char* tcId, const char* fin,
    ================================================================= */
 int main(int argc, char* argv[]) {
 
-    /* --- Modalita' singolo TC --- */
     if (argc == 5) {
-        const char* tcId    = argv[1];
-        const char* fin     = argv[2];
-        const char* foracle = argv[3];
-        const char* fout    = argv[4];
-
-        printf("\n=== ESECUZIONE SINGOLO TC: %s ===\n", tcId);
-        eseguiTC(tcId, fin, foracle, fout, stdout);
+        /* singolo TC */
+        fflush(stdout);
+        freopen("/dev/null", "w", stdout);
+        /* ... esegui TC ... */
+        freopen("/dev/stderr", "w", stdout);
+        /* stampa esito */
         return 0;
     }
 
-    /* --- Modalita' intera suite --- */
     if (argc == 4 && strcmp(argv[1], "--suite") == 0) {
         FILE* suite  = fopen(argv[2], "r");
         FILE* result = fopen(argv[3], "w");
 
-        if (suite == NULL) {
-            printf("Errore: impossibile aprire %s\n", argv[2]);
-            return 1;
-        }
-        if (result == NULL) {
-            printf("Errore: impossibile aprire %s\n", argv[3]);
-            fclose(suite);
-            return 1;
-        }
-
+        /* questi printf sono PRIMA del freopen, quindi appaiono */
         printf("\n=== ESECUZIONE TEST SUITE ===\n");
 
-        {
-            char tcId[32];
-            while (fscanf(suite, "%s", tcId) == 1) {
-                /* costruisce i nomi dei file dal nome del TC */
-                char fin[64], foracle[64], fout[64];
-                sprintf(fin,     "%s_input.txt",  tcId);
-                sprintf(foracle, "%s_oracle.txt", tcId);
-                sprintf(fout,    "%s_output.txt", tcId);
-                eseguiTC(tcId, fin, foracle, fout, result);
-            }
+        char tcId[32];
+        while (fscanf(suite, "%s", tcId) == 1) {
+            char fin[64], foracle[64], fout[64];
+            sprintf(fin,     "%s_input.txt",  tcId);
+            sprintf(foracle, "%s_oracle.txt", tcId);
+            sprintf(fout,    "%s_output.txt", tcId);
+            eseguiTC(tcId, fin, foracle, fout, result);
         }
 
         fclose(suite);
@@ -186,8 +183,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    /* --- Argomenti non validi --- */
-    printf("Uso singolo TC:   ./test_main <TC_id> <input> <oracle> <output>\n");
-    printf("Uso intera suite: ./test_main --suite <suite.txt> <result.txt>\n");
+    printf("Uso singolo TC:   ./test <TC_id> <input> <oracle> <output>\n");
+    printf("Uso intera suite: ./test --suite <suite.txt> <result.txt>\n");
     return 1;
 }

@@ -99,8 +99,6 @@ TC5 - Assegnazione fallita (nessun tecnico disponibile)
             fprintf(output, "ASSEGNAZIONE OK tecnico=%s\n", r->tecnico);
         else
             fprintf(output, "ASSEGNAZIONE FALLITA\n");
-
-        free(r);
     }
 
     liberaLista(lista);
@@ -161,7 +159,6 @@ TC5 - Assegnazione fallita (nessun tecnico disponibile)
         else
             fprintf(output, "ASSEGNAZIONE FALLITA\n");
 
-        free(r);
     }
 
     liberaLista(lista);

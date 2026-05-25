@@ -43,17 +43,13 @@ Tecnico* creaTecnico(FILE* f)
     char buffer_id[ID_LEN + 2]; 
     char buffer_nome[1000];
 
-    printf("Aggiungi un tecnico:\n");
     Tecnico* tec = malloc(sizeof(Tecnico));
     if(tec == NULL) {                     
-        printf("Errore di allocazione memoria\n");
         exit(EXIT_FAILURE);
     }
 
     //Inserimento del CODICE ID, con rispettivo controllo di validità
     while (1) {
-        printf("Codice ID (%d cifre): ", ID_LEN);
-
         if (fscanf(f, "%10s", buffer_id) != 1) {
             while (fgetc(f) != '\n' && !feof(f));
             continue;
@@ -63,59 +59,47 @@ Tecnico* creaTecnico(FILE* f)
 
         if(solo_cifre(buffer_id, ID_LEN)) break;
 
-        printf("Errore: l'ID deve essere di esattamente %d cifre numeriche.\n", ID_LEN);
     }
     strncpy(tec->codice_ID, buffer_id, ID_LEN);
     tec->codice_ID[ID_LEN] = '\0';
 
     //inserimento del NOME del tecnico, con rimozione del newline finale
-    printf("Nome: ");
     fgets(buffer_nome, sizeof(buffer_nome), f);
-    if (buffer_nome[strlen(buffer_nome) - 1] == '\n') {
+    if (buffer_nome[strlen(buffer_nome) - 1] == '\n')
         buffer_nome[strlen(buffer_nome) - 1] = '\0'; 
-    }
     tec->nome = malloc(strlen(buffer_nome) + 1); 
     if (tec->nome == NULL) {
-        printf("Errore di allocazione memoria\n");
         exit(EXIT_FAILURE);
     }
     strcpy(tec->nome, buffer_nome);
 
     //inserimento della SPECIALIZZAZIONE, con controllo di validità
-  int scelta;
-
-while (1) {
-    printf("Specializzazione:\n");
-    printf("0) Idraulico, 1) Elettricista, 2) Muratore, 3) Ascensorista, 4) Generico\n");
-    printf("Scelta: ");
-
-    if (fscanf(f, "%d", &scelta) != 1) {
+    int scelta;
+    while (1) {
+        if (fscanf(f, "%d", &scelta) != 1) {
+            while (fgetc(f) != '\n' && !feof(f));
+            continue;
+        }
         while (fgetc(f) != '\n' && !feof(f));
-        continue;
+
+        if (scelta >= 0 && scelta <= 4) break;
     }
-    while (fgetc(f) != '\n' && !feof(f));
-
-    if (scelta >= 0 && scelta <= 4) break;
-
-    printf("Errore: inserire un valore tra 0 e 4.\n");
-}
-tec->specializzazione = (Specializzazione)scelta; //Specializzazione è un enum in tipi.h
-    
-    //inserimento della DISPONIBILITÀ
+    tec->specializzazione = (Specializzazione)scelta; //Specializzazione è un enum in tipi.h
+        
+        //inserimento della DISPONIBILITÀ
     int disp_temp;
-  while (1) {
-    printf("Il tecnico è disponibile? (1 per sì, 0 per no): ");
-    fscanf(f, "%d", &disp_temp);
-     while (fgetc(f) != '\n' && !feof(f)); // flush del buffer
+    while (1) {
+        if (fscanf(f, "%d", &disp_temp) != 1) {
+            while (fgetc(f) != '\n' && !feof(f));
+            continue;
+        }
+        while (fgetc(f) != '\n' && !feof(f));
+        if (disp_temp == 0 || disp_temp == 1) break;
+    }
+    tec->disponibile = (disp_temp == 1);
 
-    if (disp_temp==1 || disp_temp==0) break;
-    
-    printf("Scelta non valida, inserire 0 o 1\n"); //Se la scelta non è valida, viene impostata la disponibilità a false
-  }
-  tec->disponibile = (disp_temp == 1);
-
-  // Restituzione finale del tecnico creato con tutti i campi valorizzati correttamente
-return tec;
+    // Restituzione finale del tecnico creato con tutti i campi valorizzati correttamente
+    return tec;
 }
 
 
