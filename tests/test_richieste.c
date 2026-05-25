@@ -14,7 +14,7 @@ TC10: Test della ricerca per codice (richiesta trovata)
 TC11: Verifica della ricerca per codice (richiesta non trovata) 
 */
 
-//* =================================================================
+/* 
    TC1 - Registrazione di una richiesta (Lista collegata)
 
    Verifica: creaRichiesta() + inserisciRichiesta()
@@ -29,7 +29,8 @@ TC11: Verifica della ricerca per codice (richiesta non trovata)
 
    TC1_oracle.txt:
      Richiesta inserita: codice=1 area=Appartamento_3B stato=APERTA
-   ================================================================= */
+    
+   */
 void eseguiTC1(FILE* input, FILE* output) {
     char area[MAX_STR], desc[MAX_STR], data[11];
     int  tipologia, urgenza;
@@ -77,7 +78,7 @@ void eseguiTC1(FILE* input, FILE* output) {
    TC8_oracle.txt:
      STATO AGGIORNATO: PIANIFICATA
    ================================================================= */
-static void eseguiTC8(FILE* input, FILE* output) {
+ void eseguiTC8(FILE* input, FILE* output) {
     int codice, nuovoStato;
     fscanf(input, "%d", &codice);
     fscanf(input, "%d", &nuovoStato);
@@ -122,7 +123,7 @@ static void eseguiTC8(FILE* input, FILE* output) {
    TC9_oracle.txt:
      TRANSIZIONE NON PERMESSA
    ================================================================= */
-static void eseguiTC9(FILE* input, FILE* output) {
+ void eseguiTC9(FILE* input, FILE* output) {
     int codice, nuovoStato;
     fscanf(input, "%d", &codice);
     fscanf(input, "%d", &nuovoStato);
@@ -163,7 +164,7 @@ static void eseguiTC9(FILE* input, FILE* output) {
    TC10_oracle.txt:
      TROVATA codice=1
    ================================================================= */
-static void eseguiTC10(FILE* input, FILE* output) {
+ void eseguiTC10(FILE* input, FILE* output) {
     int codice;
     fscanf(input, "%d", &codice);
 
@@ -196,7 +197,7 @@ static void eseguiTC10(FILE* input, FILE* output) {
    TC11_oracle.txt:
      NON TROVATA
    ================================================================= */
-static void eseguiTC11(FILE* input, FILE* output) {
+ void eseguiTC11(FILE* input, FILE* output) {
     int codice;
     fscanf(input, "%d", &codice);
 

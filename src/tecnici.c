@@ -5,14 +5,6 @@
 #include <ctype.h>
 #include "../headers/tecnici.h" 
 
-// Definizione della struttura del nodo per la lista dei tecnici
-struct nodo_tec {
-    Tecnico* tecnico;
-    int n_richieste;
-    Richiesta* richieste_assegnate;  // lista già implementata in richiesta.c
-    struct nodo_tec* prossimo;
-};
-
 //_____________________________________________________________________________________________________
 //Funzione per creare una nuova lista di tecnici
 ListaTecnici nuovaLista() {

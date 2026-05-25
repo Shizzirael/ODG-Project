@@ -77,7 +77,7 @@ static Tecnico* makeTecnico(const char* id, const char* nome,
      NESSUN CONFLITTO
      PIANIFICAZIONE OK
    ================================================================= */
-static void eseguiTC6(FILE* input, FILE* output) {
+ void eseguiTC6(FILE* input, FILE* output) {
     int codice, anno, mese, giorno, ora_i, ora_f;
 
     fscanf(input, "%d", &codice);
@@ -120,7 +120,7 @@ static void eseguiTC6(FILE* input, FILE* output) {
      PRIMO INTERVENTO PIANIFICATO
      CONFLITTO RILEVATO
    ================================================================= */
-static void eseguiTC7(FILE* input, FILE* output) {
+ void eseguiTC7(FILE* input, FILE* output) {
     int cod1, a1, m1, g1, oi1, of1;
     int cod2, a2, m2, g2, oi2, of2;
 
@@ -179,7 +179,7 @@ static void eseguiTC7(FILE* input, FILE* output) {
    TC12_oracle.txt:
      15/05/2025 11:00 | Tecnico: MarioRossi | ID: 1
    ================================================================= */
-static void eseguiTC12(FILE* input, FILE* output) {
+  void eseguiTC12(FILE* input, FILE* output) {
     int codice, anno, mese, giorno, ora_i, ora_f;
     fscanf(input, "%d %d %d %d %d %d",
            &codice, &anno, &mese, &giorno, &ora_i, &ora_f);
@@ -204,27 +204,12 @@ static void eseguiTC12(FILE* input, FILE* output) {
         Schedule albero = creaAlbero();
         albero = planIntervento(albero, *r, &tec, d);
 
-        /* porta il nodo a CONCLUSA tramite aggiornaStatoNelBST */
+        /* porta il nodo a CONCLUSA */
         aggiornaStatoNelBST(albero, codice, CONCLUSA, "20/05/2025");
 
-        /* stampaStorico scrive su stdout: lo catturiamo su file temporaneo
-           e poi copiamo su output del TC */
-        fflush(stdout);
-        freopen("tc12_tmp.txt", "w", stdout);
-        stampaStorico(albero);
-        fflush(stdout);
-        freopen("/dev/tty", "w", stdout);
-
-        {
-            FILE* f = fopen("tc12_tmp.txt", "r");
-            if (f) {
-                char buf[512];
-                while (fgets(buf, sizeof(buf), f))
-                    fprintf(output, "%s", buf);
-                fclose(f);
-                remove("tc12_tmp.txt");
-            }
-        }
+        /* stampaStorico scrive direttamente su output del TC:
+           niente freopen, niente file temporanei */
+        stampaStorico(albero, output);
 
         liberaAlbero(albero);
         free(r);
@@ -248,7 +233,7 @@ static void eseguiTC12(FILE* input, FILE* output) {
      Conclusi: 1
      Tempo medio: 10 giorni
    ================================================================= */
-static void eseguiTC13(FILE* input, FILE* output) {
+ void eseguiTC13(FILE* input, FILE* output) {
     (void)input; /* setup hardcoded per riproducibilita' dell'oracle */
 
     {

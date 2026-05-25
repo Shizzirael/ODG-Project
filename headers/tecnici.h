@@ -12,6 +12,14 @@
 
 #define ID_LEN 9
 
+// Definizione della struttura del nodo per la lista dei tecnici
+struct nodo_tec {
+    Tecnico* tecnico;
+    int n_richieste;
+    Richiesta* richieste_assegnate;  // lista già implementata in richiesta.c
+    struct nodo_tec* prossimo;
+};
+
 //Struttura per rappresentare un tecnico con i suoi dati
 typedef struct {    
     char codice_ID[ID_LEN + 1];

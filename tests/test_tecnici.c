@@ -29,7 +29,7 @@ TC5 - Assegnazione fallita (nessun tecnico disponibile)
    TC2_oracle.txt:
      123456789  Mario Rossi  Idraulico  richieste: 0
    ================================================================= */
-static void eseguiTC2(FILE* input, FILE* output) {
+ void eseguiTC2(FILE* input, FILE* output) {
     /* aggiungiTecnico legge direttamente dal file di input del TC
        grazie al refactoring che aggiunge FILE* come parametro */
     ListaTecnici lista = nuovaLista();
@@ -68,7 +68,7 @@ static void eseguiTC2(FILE* input, FILE* output) {
    TC3_oracle.txt:
      ASSEGNAZIONE OK tecnico=Mario Rossi
    ================================================================= */
-static void eseguiTC3(FILE* input, FILE* output) {
+ void eseguiTC3(FILE* input, FILE* output) {
     char area[MAX_STR], desc[MAX_STR], data[11];
     int  tipologia, urgenza;
 
@@ -127,7 +127,7 @@ static void eseguiTC3(FILE* input, FILE* output) {
    TC4_oracle.txt:
      ASSEGNAZIONE OK tecnico=Luigi Bianchi
    ================================================================= */
-static void eseguiTC4(FILE* input, FILE* output) {
+ void eseguiTC4(FILE* input, FILE* output) {
     char area[MAX_STR], desc[MAX_STR], data[11];
     int  tipologia, urgenza;
 
@@ -183,7 +183,7 @@ static void eseguiTC4(FILE* input, FILE* output) {
    TC5_oracle.txt:
      NESSUN TECNICO DISPONIBILE
    ================================================================= */
-static void eseguiTC5(FILE* input, FILE* output) {
+ void eseguiTC5(FILE* input, FILE* output) {
     char area[MAX_STR], desc[MAX_STR], data[11];
     int  tipologia, urgenza;
 
