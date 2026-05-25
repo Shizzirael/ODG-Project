@@ -15,15 +15,12 @@ TC5 - Assegnazione fallita (nessun tecnico disponibile)
 
 /* =================================================================
    TC2 - Registrazione di un tecnico (Lista tecnici)
-  
-   MODIFICA CREATECNICO() PER LEGGERE DA FILE INVECE CHE DA TASTIERA--> CREATECNICO(FILE* input)
 
-   Verifica: creaTecnico() + aggiungiTecnico() + monitoraCarico()
-   Usiamo freopen su stdin così creaTecnico legge dal file
-   invece che da tastiera. L'output di monitoraCarico viene
-   catturato e scritto su TC2_output.txt.
+   Verifica: aggiungiTecnico() con FILE* + monitoraCarico()
+   NB: richiede che aggiungiTecnico accetti FILE* come parametro
+   (opzione 1 del refactoring discusso).
 
-   TC2_input.txt (esattamente come se l'utente lo digitasse):
+   TC2_input.txt:
      123456789
      Mario Rossi
      0
@@ -32,14 +29,18 @@ TC5 - Assegnazione fallita (nessun tecnico disponibile)
    TC2_oracle.txt:
      123456789  Mario Rossi  Idraulico  richieste: 0
    ================================================================= */
-void eseguiTC2(FILE* input, FILE* output) {
+static void eseguiTC2(FILE* input, FILE* output) {
+    /* aggiungiTecnico legge direttamente dal file di input del TC
+       grazie al refactoring che aggiunge FILE* come parametro */
     ListaTecnici lista = nuovaLista();
     lista = aggiungiTecnico(lista, input);
 
-    Tecnico* t = trovaTecnicoPerNome(lista, "Mario Rossi");
-    if (t != NULL)
-        fprintf(output, "TECNICO REGISTRATO OK id=%s nome=%s\n",
-                t->codice_ID, t->nome);
+    /* verifica che il tecnico sia stato inserito correttamente */
+    if (lista != NULL && lista->tecnico != NULL)
+        fprintf(output, "%s  %s  %s  richieste: 0\n",
+                lista->tecnico->codice_ID,
+                lista->tecnico->nome,
+                spec_to_string(lista->tecnico->specializzazione));
     else
         fprintf(output, "ERRORE registrazione tecnico\n");
 
@@ -50,7 +51,7 @@ void eseguiTC2(FILE* input, FILE* output) {
    TC3 - Assegnazione corretta richiesta <-> tecnico
 
    Verifica: assegnaRichiesta() sceglie il tecnico compatibile
-   con la specializzazione richiesta. Dopo l'assegnazione,
+   con la specializzazione richiesta. Dopo l'assegnazione
    r->tecnico deve contenere il nome del tecnico.
 
    TC3_input.txt:
@@ -67,30 +68,40 @@ void eseguiTC2(FILE* input, FILE* output) {
    TC3_oracle.txt:
      ASSEGNAZIONE OK tecnico=Mario Rossi
    ================================================================= */
-void eseguiTC3(FILE* input, FILE* output) {
+static void eseguiTC3(FILE* input, FILE* output) {
     char area[MAX_STR], desc[MAX_STR], data[11];
     int  tipologia, urgenza;
 
-    /* legge il tecnico dalle prime 4 righe del file */
+    /* legge il tecnico dalle prime 4 righe tramite aggiungiTecnico */
     ListaTecnici lista = nuovaLista();
     lista = aggiungiTecnico(lista, input);
 
-    /* legge la richiesta dalle righe successive */
-    fscanf(input, "%s", area);
-    fscanf(input, "%d", &tipologia);
-    fscanf(input, "%s", desc);
-    fscanf(input, "%s", data);
-    fscanf(input, "%d", &urgenza);
+    /* legge i dati della richiesta dalle righe successive */
+    fscanf(input, "%s",  area);
+    fscanf(input, "%d",  &tipologia);
+    fscanf(input, "%s",  desc);
+    fscanf(input, "%s",  data);
+    fscanf(input, "%d",  &urgenza);
 
-    Richiesta* r = creaRichiesta(1, area, (Specializzazione)tipologia,
-                                 desc, data, urgenza);
+    {
+        Richiesta* r = creaRichiesta(1, area,
+                                     (Specializzazione)tipologia,
+                                     desc, data, urgenza);
+        if (r == NULL) {
+            fprintf(output, "ERRORE allocazione\n");
+            liberaLista(lista);
+            return;
+        }
 
-    lista = assegnaRichiesta(lista, (Specializzazione)tipologia, r);
+        lista = assegnaRichiesta(lista, (Specializzazione)tipologia, r);
 
-    if (r->tecnico[0] != '\0')
-        fprintf(output, "ASSEGNAZIONE OK tecnico=%s\n", r->tecnico);
-    else
-        fprintf(output, "ASSEGNAZIONE FALLITA\n");
+        if (r->tecnico[0] != '\0')
+            fprintf(output, "ASSEGNAZIONE OK tecnico=%s\n", r->tecnico);
+        else
+            fprintf(output, "ASSEGNAZIONE FALLITA\n");
+
+        free(r);
+    }
 
     liberaLista(lista);
 }
@@ -98,16 +109,15 @@ void eseguiTC3(FILE* input, FILE* output) {
 /* =================================================================
    TC4 - Fallback su tecnico GENERICO
 
-   Verifica: assegnaRichiesta() usa un GENERICO quando non
-   trova un tecnico con la specializzazione richiesta.
+   Verifica: assegnaRichiesta() usa un GENERICO quando non trova
+   un tecnico con la specializzazione richiesta.
    Il tecnico e' GENERICO (4) ma la richiesta e' ELETTRICISTA (1).
 
-   TC4_input.txt (tecnico):
+   TC4_input.txt:
      111111111
      Luigi Bianchi
      4
      1
-   (richiesta):
      Appartamento_1A
      1
      Problema_elettrico
@@ -117,32 +127,42 @@ void eseguiTC3(FILE* input, FILE* output) {
    TC4_oracle.txt:
      ASSEGNAZIONE OK tecnico=Luigi Bianchi
    ================================================================= */
-void eseguiTC4(FILE* input, FILE* output) {
+static void eseguiTC4(FILE* input, FILE* output) {
     char area[MAX_STR], desc[MAX_STR], data[11];
     int  tipologia, urgenza;
 
-    /* tecnico GENERICO (4) dalle prime 4 righe */
+    /* legge tecnico GENERICO dalle prime 4 righe */
     ListaTecnici lista = nuovaLista();
     lista = aggiungiTecnico(lista, input);
 
-    /* richiesta ELETTRICISTA (1) dalle righe successive */
-    fscanf(input, "%s", area);
-    fscanf(input, "%d", &tipologia);
-    fscanf(input, "%s", desc);
-    fscanf(input, "%s", data);
-    fscanf(input, "%d", &urgenza);
+    /* legge richiesta ELETTRICISTA dalle righe successive */
+    fscanf(input, "%s",  area);
+    fscanf(input, "%d",  &tipologia);
+    fscanf(input, "%s",  desc);
+    fscanf(input, "%s",  data);
+    fscanf(input, "%d",  &urgenza);
 
-    Richiesta* r = creaRichiesta(1, area, (Specializzazione)tipologia,
-                                 desc, data, urgenza);
+    {
+        Richiesta* r = creaRichiesta(1, area,
+                                     (Specializzazione)tipologia,
+                                     desc, data, urgenza);
+        if (r == NULL) {
+            fprintf(output, "ERRORE allocazione\n");
+            liberaLista(lista);
+            return;
+        }
 
-    /* assegnaRichiesta non trova ELETTRICISTA,
-       fa fallback su GENERICO */
-    lista = assegnaRichiesta(lista, (Specializzazione)tipologia, r);
+        /* assegnaRichiesta non trova ELETTRICISTA,
+           fa fallback automatico su GENERICO */
+        lista = assegnaRichiesta(lista, (Specializzazione)tipologia, r);
 
-    if (r->tecnico[0] != '\0')
-        fprintf(output, "ASSEGNAZIONE OK tecnico=%s\n", r->tecnico);
-    else
-        fprintf(output, "ASSEGNAZIONE FALLITA\n");
+        if (r->tecnico[0] != '\0')
+            fprintf(output, "ASSEGNAZIONE OK tecnico=%s\n", r->tecnico);
+        else
+            fprintf(output, "ASSEGNAZIONE FALLITA\n");
+
+        free(r);
+    }
 
     liberaLista(lista);
 }
@@ -150,8 +170,8 @@ void eseguiTC4(FILE* input, FILE* output) {
 /* =================================================================
    TC5 - Nessun tecnico disponibile (lista vuota)
 
-   Verifica: assegnaRichiesta() su lista vuota stampa il messaggio
-   di errore corretto e r->tecnico rimane vuoto.
+   Verifica: assegnaRichiesta() su lista vuota lascia
+   r->tecnico vuoto (nessuna assegnazione possibile).
 
    TC5_input.txt:
      Appartamento_2C
@@ -163,15 +183,15 @@ void eseguiTC4(FILE* input, FILE* output) {
    TC5_oracle.txt:
      NESSUN TECNICO DISPONIBILE
    ================================================================= */
-void eseguiTC5(FILE* input, FILE* output) {
+static void eseguiTC5(FILE* input, FILE* output) {
     char area[MAX_STR], desc[MAX_STR], data[11];
     int  tipologia, urgenza;
 
-    fscanf(input, "%s", area);
-    fscanf(input, "%d", &tipologia);
-    fscanf(input, "%s", desc);
-    fscanf(input, "%s", data);
-    fscanf(input, "%d", &urgenza);
+    fscanf(input, "%s",  area);
+    fscanf(input, "%d",  &tipologia);
+    fscanf(input, "%s",  desc);
+    fscanf(input, "%s",  data);
+    fscanf(input, "%d",  &urgenza);
 
     {
         Richiesta* r = creaRichiesta(1, area,
@@ -179,10 +199,10 @@ void eseguiTC5(FILE* input, FILE* output) {
                                      desc, data, urgenza);
         if (r == NULL) { fprintf(output, "ERRORE allocazione\n"); return; }
 
-        ListaTecnici lista = nuovaLista(); /* lista vuota */
+        ListaTecnici lista = nuovaLista(); /* lista vuota: nessun tecnico */
         lista = assegnaRichiesta(lista, (Specializzazione)tipologia, r);
 
-        /* Verifichiamo che il campo tecnico sia rimasto vuoto */
+        /* r->tecnico deve essere rimasto vuoto */
         if (r->tecnico[0] == '\0')
             fprintf(output, "NESSUN TECNICO DISPONIBILE\n");
         else
