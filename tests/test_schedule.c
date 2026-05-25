@@ -191,24 +191,8 @@ void eseguiTC12(FILE* input, FILE* output) {
         /* Porta il nodo BST a CONCLUSA con la data di chiusura */
         aggiornaStatoNelBST(albero, codice, CONCLUSA, "20/05/2025");
 
-        /* Cattura stampaStorico su file tramite freopen */
-        fflush(stdout);
-        freopen("tc12_tmp.txt", "w", stdout);
+        /* stampaStorico scrive direttamente nel file di output */
         stampaStorico(albero, output);
-        fflush(stdout);
-        freopen("/dev/tty", "w", stdout);
-
-        /* Copia il contenuto catturato nel file output del TC */
-        {
-            FILE* f = fopen("tc12_tmp.txt", "r");
-            if (f) {
-                char buf[512];
-                while (fgets(buf, sizeof(buf), f))
-                    fprintf(output, "%s", buf);
-                fclose(f);
-                remove("tc12_tmp.txt");
-            }
-        }
 
         liberaAlbero(albero);
         free(tec->nome);
