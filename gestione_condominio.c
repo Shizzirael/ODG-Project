@@ -199,29 +199,6 @@ static void menuRichieste(Richiesta** testa, ListaTecnici* tecnici, Schedule alb
 }
 
 // Sottomenu 2 - Tecnici
-
-static void assegnaRichiesteOrfane(ListaTecnici* tecnici, Richiesta* richieste) {
-    Richiesta* r = richieste;
-    int assegnate = 0;
-
-    while (r != NULL) {
-        if (r->stato == APERTA && r->tecnico[0] == '\0') {
-            *tecnici = assegnaRichiesta(*tecnici, r->tipologia, r);
-            if (r->tecnico[0] != '\0') {
-                printf("  -> Richiesta #%d (%s) assegnata a: %s\n",
-                       r->codice, r->area, r->tecnico);
-                assegnate++;
-            }
-        }
-        r = r->next;
-    }
-
-    if (assegnate == 0)
-        printf("  Nessuna richiesta in attesa compatibile con questo tecnico.\n");
-    else
-        printf("  %d richiesta/e assegnata/e automaticamente.\n", assegnate);
-}
-
 static void menuTecnici(ListaTecnici* tecnici, Richiesta* richieste) {
     int scelta;
 
