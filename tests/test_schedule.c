@@ -179,39 +179,61 @@ static Tecnico* makeTecnico(const char* id, const char* nome,
    TC12_oracle.txt:
      15/05/2025 11:00 | Tecnico: MarioRossi | ID: 1
    ================================================================= */
-  void eseguiTC12(FILE* input, FILE* output) {
+ void eseguiTC12(FILE* input, FILE* output) {
     int codice, anno, mese, giorno, ora_i, ora_f;
-    fscanf(input, "%d %d %d %d %d %d",
-           &codice, &anno, &mese, &giorno, &ora_i, &ora_f);
+    if (fscanf(input, "%d %d %d %d %d %d",
+           &codice, &anno, &mese, &giorno, &ora_i, &ora_f) != 6) return;
 
     {
-        Data d;
-        d.anno=anno; d.mese=mese; d.giorno=giorno;
-        d.ora_inizio=ora_i; d.ora_fine=ora_f;
+      Data d;
+      d.anno = anno; 
+      d.mese = mese; 
+      d.giorno = giorno;
+      d.ora_inizio = ora_i; 
+      d.ora_fine = ora_f;
 
-        /* tecnico su stack: planIntervento vuole Tecnico* ma non lo libera */
-        Tecnico tec;
-        strncpy(tec.codice_ID, "123456789", ID_LEN);
-        tec.codice_ID[ID_LEN] = '\0';
-        tec.nome = "MarioRossi";
-        tec.specializzazione = IDRAULICO;
-        tec.disponibile = 1;
+        //Allocazione sicura del Tecnico nell'Heap
+        Tecnico* tec = malloc(sizeof(Tecnico));
+        if (!tec) return;
 
-        Richiesta* r = creaRichiesta(codice, "Appartamento_3B", IDRAULICO,
-                                     "Perdita", "10/05/2025", 3);
-        if (r == NULL) { fprintf(output, "ERRORE allocazione\n"); return; }
+        strncpy(tec->codice_ID, "123456789", ID_LEN);
+        tec->codice_ID[ID_LEN] = '\0';
+        tec->nome = malloc(strlen("MarioRossi") + 1);
+        strcpy(tec->nome, "MarioRossi");
+        tec->specializzazione = IDRAULICO;
+        tec->disponibile = 1;
 
+        //Inizializzazione manuale e sicura della Richiesta nell'Heap
+        Richiesta* r = malloc(sizeof(Richiesta));
+        if (!r) { free(tec->nome); free(tec); return; }
+        
+        r->codice = codice; 
+        r->tipologia = IDRAULICO;
+        r->urgenza = 3;
+        r->stato = APERTA;
+        r->next = NULL;
+
+        strncpy(r->area, "Appartamento_3B", MAX_STR - 1);  
+            r->area[MAX_STR - 1] = '\0';
+        strncpy(r->descrizione, "Perdita", MAX_STR - 1);  
+            r->descrizione[MAX_STR - 1] = '\0';
+        strncpy(r->data, "10/05/2025", 10);              
+            r->data[10] = '\0';
+            r->tecnico[0] = '\0';
+            r->data_chiusura[0] = '\0';
+
+        //Esecuzione del flusso del codice principale 
         Schedule albero = creaAlbero();
-        albero = planIntervento(albero, *r, &tec, d);
+        albero = planIntervento(albero, *r, tec, d);
 
-        /* porta il nodo a CONCLUSA */
         aggiornaStatoNelBST(albero, codice, CONCLUSA, "20/05/2025");
 
-        /* stampaStorico scrive direttamente su output del TC:
-           niente freopen, niente file temporanei */
         stampaStorico(albero, output);
 
+        //Pulizia totale della memoria per non lasciare Leak
         liberaAlbero(albero);
+        free(tec->nome);
+        free(tec);
         free(r);
     }
 }

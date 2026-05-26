@@ -27,7 +27,6 @@ Compilazione:
 #include "../headers/schedule.h"
 #include "../headers/utile.h"
 #include "../tests/test_condominio.h"
-#include <unistd.h> //per stdoutfileno che serve a silenziare i printf durante l'esecuzione dei TC
 
 /* =================================================================
    HELPER: confrontaFile
@@ -85,13 +84,7 @@ static void eseguiTC(const char* tcId, const char* fin,
         return;
     }
 
-    int saved_fd = dup(STDOUT_FILENO); // salva il file descriptor di stdout per poterlo ripristinare dopo
-
-    /* silenzia stdout durante l'esecuzione del TC:
-       i printf delle funzioni del progetto non appaiono a schermo */
-    fflush(stdout);
-    freopen("/dev/null", "w", stdout);
-
+    /* nessun silenziamento: i printf del progetto escono su stdout normalmente */
     if      (strcmp(tcId, "TC1")  == 0) 
       eseguiTC1(input,  output);
     else if (strcmp(tcId, "TC2")  == 0) 
@@ -120,21 +113,15 @@ static void eseguiTC(const char* tcId, const char* fin,
                                                         eseguiTC13(input, output);
                                                       else fprintf(output, "TC NON RICONOSCIUTO\n");
 
-    if (input)  fclose(input);
+    if (input) fclose(input);
     fclose(output);
-
-   /* ripristina stdout dal file descriptor salvato */
-    fflush(stdout);
-    dup2(saved_fd, STDOUT_FILENO);
-    close(saved_fd);
 
     if (confrontaFile(fout, foracle)) {
         fprintf(result, "%s PASS\n", tcId);
         printf("Eseguito %s -> PASS\n", tcId);
     } else {
         fprintf(result, "%s FAIL\n", tcId);
-        printf("Eseguito %s -> FAIL (controlla %s vs %s)\n",
-               tcId, fout, foracle);
+        printf("Eseguito %s -> FAIL\n", tcId);
     }
 }
 

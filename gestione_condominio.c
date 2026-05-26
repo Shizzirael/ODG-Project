@@ -27,7 +27,7 @@ static void menuNuovaRichiesta(Richiesta** testa, ListaTecnici* tecnici) {
     printf("\n--- NUOVA RICHIESTA ---\n");
 
     printf("Area/Appartamento: ");
-    leggiParola(area, MAX_STR);
+    leggiParola(area, MAX_STR, stdin);
 
     printf("Tipologia (0=Idraulico 1=Elettricista 2=Muratore 3=Ascensorista 4=Generico): ");
     if (!leggiIntero(&sceltaTipologia) || sceltaTipologia < 0 || sceltaTipologia > 4) {
@@ -37,10 +37,10 @@ static void menuNuovaRichiesta(Richiesta** testa, ListaTecnici* tecnici) {
 
     
     printf("Descrizione (frase intera): ");
-    leggiRiga(descrizione, MAX_STR);
+    leggiRiga(descrizione, MAX_STR, stdin);
 
     
-    leggiData(data);
+    leggiData(data); 
 
     do {
         printf("Urgenza (1-5): ");
@@ -109,13 +109,13 @@ static void menuVisualizzaRichieste(Richiesta* testa) {
 
         case 4:
             printf("Area: ");
-            leggiParola(stringa, MAX_STR);
+            leggiParola(stringa, MAX_STR,stdin);
             stampaRichiestePerStringa(testa, stringa, FILTRO_AREA);
             break;
 
         case 5:
             printf("Nome tecnico: ");
-            leggiParola(stringa, MAX_STR);
+            leggiParola(stringa, MAX_STR, stdin);
             stampaRichiestePerStringa(testa, stringa, FILTRO_TECNICO);
             break;
 
@@ -212,32 +212,27 @@ static void menuTecnici(ListaTecnici* tecnici, Richiesta* richieste) {
         if (!leggiIntero(&scelta)) continue;
 
         switch (scelta) {
-            case 1:
+            case 1: 
                 printf("=== AGGIUNGI TECNICO ===\n");
-                printf("Inserisci i seguenti dati (uno per riga):\n");
-                printf("  1. Codice ID (9 cifre numeriche)\n");
-                printf("  2. Nome\n");
-                printf("  3. Specializzazione: 0=Idraulico 1=Elettricista 2=Muratore 3=Ascensorista 4=Generico\n");
-                printf("  4. Disponibile: 1=si 0=no\n");
-
                 *tecnici = aggiungiTecnico(*tecnici, stdin);
                 
                 printf("Tecnico aggiunto con successo.\n");
-                printf("Controllo richieste in attesa compatibili...\n");
                 assegnaRichiesteOrfane(tecnici, richieste);
                 break;
+
             case 2:
                 monitoraCarico(*tecnici);
                 break;
+
             case 0: break;
             default: printf("Scelta non valida.\n");
         }
+        
     } while (scelta != 0);
 }
 
 
 // Sottomenu 3 - Pianificazione
-
 static void menuNuovoPiano(Schedule* albero, Richiesta* richieste, ListaTecnici tecnici) {
     int codice;
     Data data;

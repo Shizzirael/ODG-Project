@@ -3,10 +3,10 @@
 #include <string.h>
 #include "../headers/utile.h"
 
-// Svuota il buffer di stdin dopo ogni scanf.
-void flushInput(void) {
+// Svuota il buffer di stdin o un altro FILE
+void flushInput(FILE* f) {
     int c;
-    while ((c = getchar()) != '\n' && c != EOF);
+    while ((c = fgetc(f)) != '\n' && c != EOF);
 }
 
 
@@ -20,10 +20,10 @@ Ritorna:
 */
 int leggiIntero(int* dest) {
     if (scanf("%d", dest) != 1) {
-        flushInput();
+        flushInput(stdin); //svuota in caso di errore
         return 0;
     }
-    flushInput();
+    flushInput(stdin); //svuota dopo lettura corretta (toglie \n)
     return 1;
 }
 
@@ -37,16 +37,17 @@ Parametri:
 Ritorna:
 - Nessun valore restituito (void), ma buf viene popolato con la parola letta se l'input è valido, o con una stringa vuota se l'input non è valido
 */
-void leggiParola(char* buf, int max) {
+void leggiParola(char* buf, int max, FILE* f) {
     char fmt[16];
     sprintf(fmt, "%%%ds", max - 1); // Costruisce un formato dinamico per scanf, ad esempio "%99s" per max=100
-    if (scanf(fmt, buf) != 1) { // Se l'input non è valido, svuota il buffer e imposta la stringa a vuota
+    
+    if (fscanf(f, fmt, buf) != 1) {
         buf[0] = '\0';
+        return;
     }   
-    flushInput();
+    flushInput(f);
     buf[max - 1] = '\0'; 
 }
-
 
 //_____________________________________________________________________________________________________
 /*
@@ -57,12 +58,15 @@ Parametri:
 Ritorna:
 - Nessun valore restituito (void), ma buf viene popolato con la riga letta se l'input è valido, o con una stringa vuota se l'input non è valido
 */
-void leggiRiga(char* buf, int max) {
-    if (fgets(buf, max, stdin) == NULL) {
+void leggiRiga(char* buf, int max, FILE* f) {
+    if (fgets(buf, max, f) == NULL) {
         buf[0] = '\0';
         return;
     }
-    buf[strlen(buf) - 1] = '\0';
+    if ( strlen(buf) > 0 && buf[strlen(buf) - 1] == '\n')
+        buf[strlen(buf) - 1] = '\0';
+    else
+        flushInput(f);
 }
 
 
@@ -76,9 +80,11 @@ Ritorna:
 */
 void leggiData(char* buf) {
     int g, m, a;
+
     while (1) {
         printf("Data (GG/MM/AAAA): ");
-        leggiParola(buf, 11);
+        
+        leggiParola(buf, 11, stdin);
         if ((strlen(buf) == 10) &&
             (sscanf(buf, "%d/%d/%d", &g, &m, &a) == 3) &&
             (g >= 1 && g <= 31) &&

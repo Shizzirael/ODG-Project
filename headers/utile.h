@@ -8,11 +8,24 @@
 #ifndef UTILE_H
 #define UTILE_H
 
-/* Funzione:flushInput
+/* ___________________________________________________________________________________________________
+Funzione:flushInput
 Pulisce il buffer di input, rimuovendo eventuali caratteri residui dopo una lettura fallita 
 o per preparare il buffer per la prossima lettura.
+
+Parametri:
+-FILE* f: un file dove verrà letta la riga da eliminare
+
+-Pre-condizioni:
+-FILE* f deve essere valido (stdin o un altro FILE)
+
+-Post-condizioni:
+-viene pulito il buffer
+
+-Ritorna
+-non torna nulla(void), ma il buffer viene svuotato
 */
-void flushInput(void);
+void flushInput(FILE* f);
 
 /*____________________________________________________________________________________________________
 Funzione:leggiIntero
@@ -46,6 +59,7 @@ Parametri:
 Pre-condizioni:
 - buf deve essere un array di caratteri valido con una dimensione di almeno max
 - max deve essere un intero maggiore di 1
+- FILE* f è il file da dove legge la parola
 
 Post-condizioni:
 - Se l'input è una parola valida, buf viene popolato con la parola letta e terminato con null.
@@ -55,7 +69,7 @@ Ritorna:
 - Nessun valore restituito (void), ma buf viene popolato con la parola letta se l'input è valido, 
 o con una stringa vuota se l'input non è valido
 */
-void leggiParola(char* buf, int max);
+void leggiParola(char* buf, int max, FILE* f);
 
 /*____________________________________________________________________________________________________
 Funzione:LeggiRiga
@@ -68,6 +82,7 @@ Parametri:
 Pre-condizioni:
 - buf deve essere un array di caratteri valido con una dimensione di almeno max
 - max deve essere un intero maggiore di 1
+-FILE* f file da dove legge la riga
 
 Post-condizioni:
 - Se l'input è una riga valida, buf viene popolato con la riga letta e terminato con null.
@@ -77,7 +92,7 @@ Ritorna:
 - Nessun valore restituito (void), ma buf viene popolato con la riga letta se l'input è valido,
 o con una stringa vuota se l'input non è valido
 */
-void leggiRiga(char* buf, int max);
+void leggiRiga(char* buf, int max, FILE* f);
 
 /*____________________________________________________________________________________________________
 Funzione:leggiData
