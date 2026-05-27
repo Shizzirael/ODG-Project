@@ -4,6 +4,8 @@
 #include "../headers/richieste.h"
 #include "../headers/utile.h"
  
+
+//TODO ALLINEARE IL COMMENTO DELLE FUNZIONI AGLI ALTRI SOURCE FILES
 //Queste funzioni traducono i valori enum in stringhe leggibili da stampare a schermo. Dato che vengono usate in vari punti del codice
 //è comodo averle come funzioni separate.
  
@@ -34,7 +36,6 @@ const char* specializzazioneToString(Specializzazione sp) {
 //APERTA -> PIANIFICATA -> IN_LAVORAZIONE -> CONCLUSA
 //In qualsiasi momento e' possibile passare ad ANNULLATA.
 //Gli stati CONCLUSA e ANNULLATA sono finali: non si torna indietro.
- 
 int transisioneValida(StatoRichiesta attuale, StatoRichiesta nuovo) {
     switch (attuale) {
         case APERTA:         return (nuovo == PIANIFICATA    || nuovo == ANNULLATA);
@@ -53,7 +54,7 @@ static int dataInGiorni(const char* data) {
     return a * 365 + m * 30 + g;
 }
  
- 
+//TODO non c'e' la descrizione di cosa fa questa funzione (non sto contando le spiegazioni all'interno)
 Richiesta* creaRichiesta(int codice, const char* area, Specializzazione tipologia, const char* descrizione, const char* data, int urgenza) {
     Richiesta* nuova = (Richiesta*)malloc(sizeof(Richiesta));
     if (nuova == NULL) return NULL;
@@ -99,6 +100,7 @@ void inserisciRichiesta(Richiesta** testa, Richiesta* nuova) {
 }
  
 //Modifica lo stato di una richiesta solo se la transizione e' valida
+//TODO printf sono commenti
 int aggiornaStato(Richiesta* r, StatoRichiesta nuovoStato) {
     if (r == NULL) {
         printf("Errore: richiesta non valida (NULL).\n");
@@ -286,7 +288,8 @@ void stampaRichiesteFiltrate(Richiesta* testa, int valore, TipoFiltro tipoFiltro
  
     if (!trovato) printf("Nessuna richiesta trovata per i criteri inseriti.\n");
 }
- 
+
+//TODO non c'e' descrizione di cio che fa la funzione
 void stampaRichiestePerStringa(Richiesta* testa, const char* valore, TipoFiltro tipoFiltro) {
     Richiesta* temp;
     int trovato = 0;
@@ -312,6 +315,7 @@ void stampaRichiestePerStringa(Richiesta* testa, const char* valore, TipoFiltro 
     if (!trovato) printf("Nessuna richiesta trovata per il valore \"%s\".\n", valore);
 }
  
+//TODO non c'e' descrizione di cio che fa la funzione
 void stampaRichiestePerTipologia(Richiesta* testa, Specializzazione tipologia) {
     Richiesta* temp;
     int trovato = 0;
@@ -480,3 +484,4 @@ void stampaHeap(const PriorityQueue* pq) {
     }
 }
  
+

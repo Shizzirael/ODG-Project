@@ -12,10 +12,7 @@
 #include "richieste.h"
 #include "tecnici.h"
 
-/*
- Struttura Data: rappresenta la data e la fascia oraria di un intervento.
- ora_inizio e ora_fine definiscono la fascia (es. 9 e 11 = dalle 9:00 alle 11:00).
- */
+//Struttura Data: rappresenta la data e la fascia oraria di un intervento.
 typedef struct {
     int anno;
     int mese;
@@ -24,7 +21,7 @@ typedef struct {
     int ora_fine;
 } Data;
 
-/* Tipo opaco: puntatore al nodo interno dell'albero. */
+// puntatore al nodo interno dell'albero.
 typedef struct node_schedule *Schedule;
 
 
@@ -71,8 +68,6 @@ int verificaConflitti(Schedule root, Data target);
 /*____________________________________________________________________________________________________
 Funzione: planIntervento
 Inserisce un nuovo intervento nell'albero BST ordinato per data e fascia oraria.
-Lo stato della richiesta viene impostato a PIANIFICATA al momento dell'inserimento.
-Il chiamante e' responsabile di invocare verificaConflitti prima di questa funzione.
 
 Parametri:
 - root: radice corrente dell'albero (NULL se l'albero e' vuoto).
@@ -96,8 +91,7 @@ Schedule planIntervento(Schedule root, Richiesta req, Tecnico* tec, Data data);
 
 /*____________________________________________________________________________________________________
 Funzione: stampaStorico
-Stampa in ordine cronologico tutti gli interventi il cui stato e' CONCLUSA,
-mostrando data, tecnico assegnato e codice della richiesta.
+Stampa in ordine cronologico tutti gli interventi il cui stato e' CONCLUSA.
 
 Parametri:
 - root: radice dell'albero BST degli interventi.
@@ -119,7 +113,6 @@ void stampaStorico(Schedule root, FILE* out);
 Funzione: cercaIntervento
 Cerca nell'intero albero il nodo con il codice richiesta corrispondente a codiceTarget.
 La ricerca e' completa (non BST-guidata) perche' l'albero e' ordinato per data, non per codice.
-Se trovato, stampa la data dell'intervento.
 
 Parametri:
 - root:         radice dell'albero BST.
@@ -141,7 +134,6 @@ int cercaIntervento(Schedule root, int codiceTarget);
 /*____________________________________________________________________________________________________
 Funzione: generaReport
 Visita l'intero albero e conta gli interventi suddividendoli in aperti e conclusi.
-Gli interventi in stato CONCLUSA incrementano *conclusi, tutti gli altri incrementano *aperti.
 
 Parametri:
 - root:     radice dell'albero BST.
@@ -212,8 +204,7 @@ void trovaTecnicoPiuAttivo(Schedule root);
 /*____________________________________________________________________________________________________
 Funzione: interventiPerTipologia
 Conta e stampa il numero di interventi presenti nell'albero per ciascuna tipologia
-di specializzazione (IDRAULICO, ELETTRICISTA, MURATORE, ASCENSORISTA, GENERICO),
-indipendentemente dallo stato dell'intervento.
+di specializzazione, indipendentemente dallo stato dell'intervento.
 
 Parametri:
 - root: radice dell'albero BST.
@@ -232,10 +223,7 @@ void interventiPerTipologia(Schedule root);
 
 /*____________________________________________________________________________________________________
 Funzione: liberaAlbero
-Dealloca ricorsivamente tutti i nodi dell'albero BST con visita post-order
-(prima i sottoalberi sinistro e destro, poi il nodo corrente).
-Non dealloca le strutture Tecnico* puntate dai nodi, poiche' la loro
-ownership appartiene alla lista dei tecnici (modulo tecnici.c).
+Dealloca ricorsivamente tutti i nodi dell'albero BST.
 
 Parametri:
 - root: radice dell'albero da deallocare.

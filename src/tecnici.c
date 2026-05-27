@@ -5,14 +5,12 @@
 #include <ctype.h>
 #include "../headers/tecnici.h" 
 
-//_____________________________________________________________________________________________________
 //Funzione per creare una nuova lista di tecnici
 ListaTecnici nuovaLista() {
     return NULL; 
 }
 
-//_____________________________________________________________________________________________________
-/*
+/*_____________________________________________________________________________________________________
 Controlla che la stringa sia composta solo da cifre e abbia una lunghezza specifica.
 Utilizzata da creaTecnico per validare l'input dell'ID del tecnico.
 Parametri:
@@ -29,8 +27,7 @@ bool solo_cifre(const char *s, size_t n) {
     return true;
 }
 
-//_____________________________________________________________________________________________________
-/*
+/*_____________________________________________________________________________________________________
 Crea un nuovo tecnico. I dati del tecnico vengono inseriti dall'utente.
 Utilizzata da aggiungiTecnico per creare un tecnico da inserire nella lista.
 Parametri:
@@ -136,9 +133,7 @@ Tecnico* creaTecnico(FILE* f)
     return tec;
 }
 
-
-//______________________________________________________________________________________________________
-/*
+/*_____________________________________________________________________________________________________
  Assegna automaticamente le richieste orfane ai tecnici disponibili.
  Parametri:
  - tecnici: puntatore alla lista dei tecnici
@@ -162,8 +157,7 @@ void assegnaRichiesteOrfane(ListaTecnici* tecnici, Richiesta* richieste) {
 }
 
 
-//_____________________________________________________________________________________________________
-/*  
+/*_____________________________________________________________________________________________________
 Aggiunge un nuovo tecnico alla lista dei tecnici.
 Il nuovo tecnico viene creato tramite la funzione creaTecnico
 Parametri:
@@ -189,8 +183,7 @@ ListaTecnici aggiungiTecnico(ListaTecnici testa, FILE* f)
 }
 
 
-//_____________________________________________________________________________________________________
-/*  
+/*_____________________________________________________________________________________________________  
 Libera la memoria allocata per la lista dei tecnici, inclusi i dati dei tecnici stessi.
 Parametri:
 - testa: il nodo iniziale della lista dei tecnici da liberare, può essere NULL se la lista è vuota
@@ -212,7 +205,7 @@ void liberaLista(ListaTecnici testa) {
 //-------------------------------------------------------------------------------------------------------
 //FUNZIONI PER ASSEGNARE RICHIESTE AI TECNICI e ORDINARE PER NUMERO RICHIESTE ASSEGNATE
 
-/*  
+/*_____________________________________________________________________________________________________  
 Rimuove un nodo dalla lista senza liberarlo
 serve per reinserirlo ordinato dopo aver aggiornato il numero di richieste assegnate
 Parametri:
@@ -242,8 +235,7 @@ static struct nodo_tec* rimuoviNodo(ListaTecnici testa, struct nodo_tec* nodo) {
 }
 
 
-//_____________________________________________________________________________________________________
-/*  
+/*_____________________________________________________________________________________________________  
 Inserisce un nodo già esistente nella lista dei tecnici 
 in modo ordinato in base al numero di richieste assegnate.
 Parametri:
@@ -272,8 +264,7 @@ static ListaTecnici inserisciOrdinato(ListaTecnici testa, struct nodo_tec* nodo)
 }
 
 
-//_____________________________________________________________________________________________________
-/*  
+/*_____________________________________________________________________________________________________  
 Cerca un tecnico disponibile con la specializzazione richiesta che abbia meno richieste assegnate.
 Parametri:
 - testa: il nodo iniziale della lista dei tecnici, può essere NULL se la lista è vuota

@@ -1,6 +1,6 @@
 /* 
  File:        gestione_condominio.c (Modulo principale per la gestione del condominio)
- Autori:      Assuntapia Piccolo,Fabiana Sasso, Lucia Schettino
+ Autori:      Assuntapia Piccolo, Fabiana Sasso, Lucia Schettino
  Matricole:   NF12100574, NF12100245, NF12100025 
  Descrizione: Punto di ingresso del programma, gestisce il menu principale e coordina le operazioni sui moduli di richieste e tecnici.
               Utilizza funzioni di utilità per la gestione dell'input e altre operazioni comuni.
@@ -14,10 +14,13 @@
 #include "headers/schedule.h"
 #include "headers/utile.h"
 
-/*
-  Sottomenu 1 - Richieste
+/*_____________________________________________________________________________________________________  
+Gestisce l'inserimento di una nuova richiesta da parte dell'utente.
+Prende i dati da tastiera, crea la richiesta e prova subito ad assegnarle un tecnico libero in base alla tipologia.
+Parametri:
+- testa: puntatore alla lista delle richieste
+- tecnici: puntatore alla lista dei tecnici
 */
-
 static void menuNuovaRichiesta(Richiesta** testa, ListaTecnici* tecnici) {
     char area[MAX_STR];
     char descrizione[MAX_STR];
@@ -59,7 +62,6 @@ static void menuNuovaRichiesta(Richiesta** testa, ListaTecnici* tecnici) {
     inserisciRichiesta(testa, nuova);
     printf("Richiesta creata con codice %d.\n", codice);
 
-    // FIX: aggiorniamo *tecnici cosi il puntatore resta valido nel main
     *tecnici = assegnaRichiesta(*tecnici, (Specializzazione)sceltaTipologia, nuova);
     if (nuova->tecnico[0] != '\0')
         printf("Tecnico assegnato automaticamente: %s\n", nuova->tecnico);
@@ -67,6 +69,12 @@ static void menuNuovaRichiesta(Richiesta** testa, ListaTecnici* tecnici) {
         printf("Nessun tecnico disponibile per questa tipologia al momento.\n");
 }
 
+/*_____________________________________________________________________________________________________  
+Sottomenu per stampare a schermo le richieste.
+Ti fa scegliere vari filtri (stato, urgenza, nome del tecnico, ecc.) e stampa solo quelle che matchano.
+Parametri:
+- testa: la lista delle richieste da cui leggere
+*/
 static void menuVisualizzaRichieste(Richiesta* testa) {
     int scelta, valore;
     char stringa[MAX_STR];
@@ -132,6 +140,11 @@ static void menuVisualizzaRichieste(Richiesta* testa) {
     }
 }
 
+/*_____________________________________________________________________________________________________  
+Permette di cercare una richiesta specifica sapendo il suo ID oppure cercando per tipologia.
+Parametri:
+- testa: la lista delle richieste
+*/
 static void menuRicercaRichieste(Richiesta* testa) {
     int scelta;
 
@@ -156,6 +169,14 @@ static void menuRicercaRichieste(Richiesta* testa) {
     }
 }
 
+/*_____________________________________________________________________________________________________  
+Sottomenu principale della sezione Richieste.
+Fa da hub per creare, aggiornare, visualizzare e cercare le richieste. Gestisce pure la sync con l'albero degli interventi se cambi lo stato di una richiesta.
+Parametri:
+- testa: puntatore alla lista richieste
+- tecnici: puntatore alla lista tecnici
+- albero: l'albero di pianificazione degli interventi
+*/
 static void menuRichieste(Richiesta** testa, ListaTecnici* tecnici, Schedule albero) {
     int scelta;
 
@@ -198,7 +219,13 @@ static void menuRichieste(Richiesta** testa, ListaTecnici* tecnici, Schedule alb
     } while (scelta != 0);
 }
 
-// Sottomenu 2 - Tecnici
+/*_____________________________________________________________________________________________________  
+Sottomenu per la gestione del personale.
+Puoi aggiungere un nuovo tecnico (e il sistema proverà subito ad appioppargli le richieste rimaste "orfane") o controllare quanto lavoro ha assegnato.
+Parametri:
+- tecnici: puntatore alla lista tecnici
+- richieste: la lista delle richieste
+*/
 static void menuTecnici(ListaTecnici* tecnici, Richiesta* richieste) {
     int scelta;
 
@@ -231,8 +258,14 @@ static void menuTecnici(ListaTecnici* tecnici, Richiesta* richieste) {
     } while (scelta != 0);
 }
 
-
-// Sottomenu 3 - Pianificazione
+/*_____________________________________________________________________________________________________  
+Pianifica un appuntamento per una richiesta specifica.
+Si fa un sacco di check per assicurarsi che le date abbiano senso (es. che l'intervento non sia prima della data di apertura) e che non ci siano sovrapposizioni nell'albero.
+Parametri:
+- albero: puntatore all'albero degli appuntamenti
+- richieste: la lista delle richieste per verificare lo stato e i dati
+- tecnici: la lista dei tecnici
+*/
 static void menuNuovoPiano(Schedule* albero, Richiesta* richieste, ListaTecnici tecnici) {
     int codice;
     Data data;
@@ -251,7 +284,6 @@ static void menuNuovoPiano(Schedule* albero, Richiesta* richieste, ListaTecnici 
         return;
     }
 
-//ug fix blocca doppia pianificazione della stessa richiesta.
 //cercaIntervento visita tutto l'albero cercando il codice.
     if (cercaIntervento(*albero, codice)) {
         printf("Errore: la richiesta %d ha gia' un intervento pianificato.\n", codice);
@@ -324,6 +356,14 @@ static void menuNuovoPiano(Schedule* albero, Richiesta* richieste, ListaTecnici 
     printf("Intervento pianificato con successo.\n");
 }
 
+/*_____________________________________________________________________________________________________  
+Sottomenu principale per gestire l'agenda (gli schedule).
+Fa da ponte per creare un nuovo piano, cercare roba già fissata o vedere lo storico di quelli finiti.
+Parametri:
+- albero: puntatore all'albero degli appuntamenti
+- richieste: la lista delle richieste
+- tecnici: la lista dei tecnici
+*/
 static void menuPianificazione(Schedule* albero, Richiesta* richieste, ListaTecnici tecnici) {
     int scelta;
 
@@ -370,10 +410,13 @@ static void menuPianificazione(Schedule* albero, Richiesta* richieste, ListaTecn
     } while (scelta != 0);
 }
 
-
-// Sottomenu 4 - Report
- 
-
+/*_____________________________________________________________________________________________________  
+Mostra le statistiche globali del sistema.
+Fa un recap veloce su quanti interventi sono in corso/finiti, qual è il tempo medio di completamento (così vedi se la gente ci mette troppo) e qual è l'area con più casini.
+Parametri:
+- albero: l'albero per ricavare i dati degli interventi
+- richieste: la lista delle richieste per valutare le aree problematiche
+*/
 static void menuReport(Schedule albero, Richiesta* richieste) {
     printf("\n=== REPORT E STATISTICHE ===\n");
 
@@ -398,11 +441,13 @@ static void menuReport(Schedule albero, Richiesta* richieste) {
     areaPiuProblematica(richieste);
 }
 
-
-// MENU PRINCIPALE
-
+/*_____________________________________________________________________________________________________  
+Il Main.
+Inizializza le strutture dati (richieste, tecnici e albero), printa il banner e fa girare il menu principale finché non decidi di uscire.
+Alla chiusura si assicura di deallocare e pulire tutto per non lasciare memory leak in giro.
+*/
 int main(void) {
-    Richiesta*   richieste = NULL;
+    Richiesta* richieste = NULL;
     ListaTecnici tecnici   = NULL;
     Schedule     albero    = NULL;
 
@@ -426,8 +471,6 @@ int main(void) {
 
         switch (scelta) {
             case 1:
-                // Passa&tecnici cosi menuRichieste puo' aggiornarlo
-                // quando assegnaRichiesta riordina la lista
                 menuRichieste(&richieste, &tecnici, albero);
                 break;
 

@@ -7,17 +7,7 @@
               Per ogni TC legge TCn_oracle.txt, esegue il test in memoria,
               scrive TCn_output.txt e confronta con l'oracolo (PASS/FAIL).
               I risultati dell'intera test suite vengono scritti in result.txt.
-
-Compilazione:
-    gcc -c src/utile.c src/richieste.c src/tecnici.c src/schedule.c
-   gcc utile.o richieste.o tecnici.o schedule.o test_condominio.c -o test_condominio
- 
- Esecuzione singolo TC:
-    ./test_condominio TC1 TC1_oracle.txt TC1_output.txt
-
-  Esecuzione intera suite:
-   ./test_condominio --suite test_suite.txt result.txt
- */
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,35 +18,44 @@ Compilazione:
 #include "../headers/utile.h"
 #include "../tests/test_condominio.h"
 
-/* =================================================================
-   HELPER: confrontaFile
-   Confronta due file riga per riga.
-   Ritorna 1 se identici, 0 altrimenti.
-   ================================================================= */
+/*_____________________________________________________________________________________________________  
+Confronta due file riga per riga per vedere se sono esattamente identici.
+Praticamente legge riga per riga e appena trova una differenza (o se uno dei due finisce prima dell'altro) si ferma, pk vuol dire che i file non matchano.
+Parametri:
+- f1: il percorso del primo file da aprire (es. il tuo output)
+- f2: il percorso del secondo file (di solito l'oracolo con i risultati attesi)
+Ritorna:
+- 1 se i file sono perfettamente uguali
+- 0 se i file sono diversi o se proprio non riesce ad aprirli
+*/
+
 static int confrontaFile(const char* f1, const char* f2) {
     FILE* a = fopen(f1, "r");
     FILE* b = fopen(f2, "r");
     char r1[512], r2[512];
     int uguale = 1;
 
-    if (!a || !b) { /* se non riesce ad aprire uno dei file, considera diversi */
+    if (!a || !b) { 
         if (a) fclose(a);
         if (b) fclose(b);
         return 0;
     }
 
     while (1) {
-        char* l1 = fgets(r1, sizeof(r1), a); /* legge una riga dal file a */
-        char* l2 = fgets(r2, sizeof(r2), b); /* legge una riga dal file b */
+        char* l1 = fgets(r1, sizeof(r1), a); 
+        char* l2 = fgets(r2, sizeof(r2), b); 
 
-        if (!l1 && !l2) break; /* entrambi finiti: file identici */
+        if (!l1 && !l2) break; 
 
-        if (!l1 || !l2) { /* uno finito prima dell'altro: diversi */
+        if (!l1 || !l2) { 
             uguale = 0;
             break;
         }
 
-        if (strcmp(r1, r2) != 0) { /* righe diverse */
+        r1[strcspn(r1, "\r\n")] = 0;
+        r2[strcspn(r2, "\r\n")] = 0;
+
+        if (strcmp(r1, r2) != 0) { 
             uguale = 0;
             break;
         }
@@ -66,12 +65,18 @@ static int confrontaFile(const char* f1, const char* f2) {
     fclose(b);
     return uguale;
 }
-
-/* =================================================================
-   DISPATCHER: eseguiTC
-   Apre i file del TC, chiama la funzione corretta,
-   confronta output vs oracle e registra l'esito.
-   ================================================================= */
+/*_____________________________________________________________________________________________________  
+Esegue un test case specifico (TC) smistando la chiamata alla funzione giusta in base all'ID.
+Apre i file di input e output, fa girare il test e alla fine usa confrontaFile per controllare se il tuo output è uguale all'oracolo. In base a quello scrive PASS o FAIL nel file dei risultati.
+Parametri:
+- tcId: la stringa col nome del test (tipo "TC1", "TC2", ecc.)
+- fin: il file da dove va letto l'input
+- foracle: il file che contiene il risultato corretto per il confronto
+- fout: il file dove la funzione andrà a scrivere il suo output
+- result: il file (o lo stream) dove salvare l'esito finale (PASS/FAIL)
+Ritorna:
+- Nessun valore (void)
+*/
 static void eseguiTC(const char* tcId, const char* fin,
                      const char* foracle, const char* fout,
                      FILE* result) {
@@ -84,7 +89,6 @@ static void eseguiTC(const char* tcId, const char* fin,
         return;
     }
 
-    /* nessun silenziamento: i printf del progetto escono su stdout normalmente */
     if      (strcmp(tcId, "TC1")  == 0) eseguiTC1(input,  output);
     else if (strcmp(tcId, "TC2")  == 0) eseguiTC2(input,  output);
     else if (strcmp(tcId, "TC3")  == 0) eseguiTC3(input,  output);
@@ -113,16 +117,16 @@ static void eseguiTC(const char* tcId, const char* fin,
 }
 
 
-/* =================================================================
-   MAIN
-   Supporta due modalita':
-
-   1) Singolo TC (come nella slide del professore):
-      ./test_main TC1 TC1_input.txt TC1_oracle.txt TC1_output.txt
-
-   2) Intera suite:
-      ./test_main --suite test_suite.txt result.txt
-   ================================================================= */
+/*_____________________________________________________________________________________________________  
+Il cuore dell'eseguibile di test. Gestisce due modalità di avvio da terminale: 
+o gli passi un singolo test a mano (tipo la roba delle slide del prof), oppure gli passi una suite intera (un txt con la lista dei test) usando --suite e lui se li fa tutti in automatico.
+Parametri:
+- argc: il numero di argomenti passati da linea di comando
+- argv: l'array con le stringhe degli argomenti (es. argv[1] può essere "--suite" o il nome del singolo test)
+Ritorna:
+- 0 se l'esecuzione va a buon fine
+- 1 se sbagli a passargli i parametri e ti printa pure come si usa
+*/
 int main(int argc, char* argv[]) {
 
       if (argc == 5) {
@@ -136,7 +140,6 @@ int main(int argc, char* argv[]) {
         FILE* suite  = fopen(argv[2], "r");
         FILE* result = fopen(argv[3], "w");
 
-        /* questi printf sono PRIMA del freopen, quindi appaiono */
         printf("\n=== ESECUZIONE TEST SUITE ===\n");
 
         char tcId[32];

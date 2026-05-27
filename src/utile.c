@@ -10,8 +10,7 @@ void flushInput(FILE* f) {
 }
 
 
-//_____________________________________________________________________________________________________
-/*
+/*_____________________________________________________________________________________________________
 Legge un intero e restituisce 1 se l'input è valido, altrimenti restituisce 0 e pulisce il buffer.
 Parametri:
 - dest: un puntatore a un intero dove verrà memorizzato il valore letto se l'input è valido
@@ -28,8 +27,7 @@ int leggiIntero(int* dest) {
 }
 
 
-//_____________________________________________________________________________________________________
-/*
+/*_____________________________________________________________________________________________________
 Legge una parola da stdin, con un limite massimo di caratteri, e la memorizza in buf
 Parametri:
 - buf: un array di caratteri dove verrà memorizzata la parola letta, deve essere di dimensione almeno max
@@ -49,8 +47,7 @@ void leggiParola(char* buf, int max, FILE* f) {
     buf[max - 1] = '\0'; 
 }
 
-//_____________________________________________________________________________________________________
-/*
+/*_____________________________________________________________________________________________________
 Legge una riga intera da stdin, con un limite massimo di caratteri, e la memorizza in buf
 Parametri:
 - buf: un array di caratteri dove verrà memorizzata la riga letta, deve essere di dimensione almeno max
@@ -70,8 +67,7 @@ void leggiRiga(char* buf, int max, FILE* f) {
 }
 
 
-//_____________________________________________________________________________________________________
-/*
+/*_____________________________________________________________________________________________________
 Legge una data nel formato GG/MM/AAAA e la memorizza in buf, con validazione del formato e dei valori
 Parametri:
 - buf: un array di caratteri dove verrà memorizzata la data letta, deve essere di dimensione almeno 11 (10 per la data + 1 per la terminazione null)
@@ -97,9 +93,7 @@ void leggiData(char* buf) {
 }
 
 
-//Genera un codice univoco per le nuove richieste.
-//_____________________________________________________________________________________________________
-/*
+/*_____________________________________________________________________________________________________
 Genera un codice univoco incrementale per le nuove richieste, partendo da 1 e incrementando ad ogni chiamata.
 Parametri:
 - Nessun parametro richiesto, la funzione mantiene un contatore interno statico che viene incrementato ad ogni chiamata
