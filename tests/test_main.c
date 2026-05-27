@@ -85,34 +85,21 @@ static void eseguiTC(const char* tcId, const char* fin,
     }
 
     /* nessun silenziamento: i printf del progetto escono su stdout normalmente */
-    if      (strcmp(tcId, "TC1")  == 0) 
-      eseguiTC1(input,  output);
-    else if (strcmp(tcId, "TC2")  == 0) 
-          eseguiTC2(input,  output);
-          else if (strcmp(tcId, "TC3")  == 0) 
-                eseguiTC3(input,  output);
-              else if (strcmp(tcId, "TC4")  == 0) 
-                    eseguiTC4(input,  output);
-                  else if (strcmp(tcId, "TC5")  == 0) 
-                        eseguiTC5(input,  output);
-                      else if (strcmp(tcId, "TC6")  == 0) 
-                          eseguiTC6(input,  output);
-                          else if (strcmp(tcId, "TC7")  == 0) 
-                                eseguiTC7(input,  output);
-                              else if (strcmp(tcId, "TC8")  == 0) 
-                                    eseguiTC8(input,  output);
-                                  else if (strcmp(tcId, "TC9")  == 0) 
-                                      eseguiTC9(input,  output);
-                                      else if (strcmp(tcId, "TC10") == 0) 
-                                            eseguiTC10(input, output);
-                                          else if (strcmp(tcId, "TC11") == 0) 
-                                                eseguiTC11(input, output);
-                                              else if (strcmp(tcId, "TC12") == 0) 
-                                                    eseguiTC12(input, output);
-                                                  else if (strcmp(tcId, "TC13") == 0) 
-                                                        eseguiTC13(input, output);
-                                                      else fprintf(output, "TC NON RICONOSCIUTO\n");
-
+    if      (strcmp(tcId, "TC1")  == 0) eseguiTC1(input,  output);
+    else if (strcmp(tcId, "TC2")  == 0) eseguiTC2(input,  output);
+    else if (strcmp(tcId, "TC3")  == 0) eseguiTC3(input,  output);
+    else if (strcmp(tcId, "TC4")  == 0) eseguiTC4(input,  output);
+    else if (strcmp(tcId, "TC5")  == 0) eseguiTC5(input,  output);
+    else if (strcmp(tcId, "TC6")  == 0) eseguiTC6(input,  output);
+    else if (strcmp(tcId, "TC7")  == 0) eseguiTC7(input,  output);
+    else if (strcmp(tcId, "TC8")  == 0) eseguiTC8(input,  output);
+    else if (strcmp(tcId, "TC9")  == 0) eseguiTC9(input,  output);
+    else if (strcmp(tcId, "TC10") == 0) eseguiTC10(input, output);
+    else if (strcmp(tcId, "TC11") == 0) eseguiTC11(input, output);
+    else if (strcmp(tcId, "TC12") == 0) eseguiTC12(input, output);
+    else if (strcmp(tcId, "TC13") == 0) eseguiTC13(input, output);
+    else fprintf(output, "TC NON RICONOSCIUTO\n");
+    
     if (input) fclose(input);
     fclose(output);
 

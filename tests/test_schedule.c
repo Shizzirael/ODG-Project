@@ -8,54 +8,6 @@
 #include "../headers/utile.h"
 #include "../tests/test_condominio.h"
 
-/* Helper: costruisce una Data */
-static Data makeData(int anno, int mese, int giorno,
-                     int ora_inizio, int ora_fine) {
-    Data d;
-    d.anno       = anno;
-    d.mese       = mese;
-    d.giorno     = giorno;
-    d.ora_inizio = ora_inizio;
-    d.ora_fine   = ora_fine;
-    return d;
-}
-
-/* Helper: inizializza una Richiesta sul posto */
-static void initR(Richiesta* r, int codice, const char* area,
-                  Specializzazione tip, const char* desc,
-                  const char* data, int urgenza,
-                  StatoRichiesta stato, const char* dataChiusura) {
-    r->codice    = codice;
-    r->urgenza   = urgenza;
-    r->stato     = stato;
-    r->tipologia = tip;
-    r->next      = NULL;
-    strncpy(r->area,        area, MAX_STR-1); r->area[MAX_STR-1]        = '\0';
-    strncpy(r->descrizione, desc, MAX_STR-1); r->descrizione[MAX_STR-1] = '\0';
-    strncpy(r->data,        data, 10);        r->data[10]               = '\0';
-    r->tecnico[0]       = '\0';
-    r->data_chiusura[0] = '\0';
-    if (dataChiusura && dataChiusura[0] != '\0') {
-        strncpy(r->data_chiusura, dataChiusura, 10);
-        r->data_chiusura[10] = '\0';
-    }
-}
-
-/* Helper: crea Tecnico senza stdin */
-static Tecnico* makeTecnico(const char* id, const char* nome,
-                             Specializzazione spec) {
-    Tecnico* t = malloc(sizeof(Tecnico));
-    if (!t) return NULL;
-    strncpy(t->codice_ID, id, ID_LEN);
-    t->codice_ID[ID_LEN] = '\0';
-    t->nome = malloc(strlen(nome) + 1);
-    if (!t->nome) { free(t); return NULL; }
-    strcpy(t->nome, nome);
-    t->specializzazione = spec;
-    t->disponibile      = true;
-    return t;
-}
-
 /* TC schedule:
 **TC6**: Test della pianificazione interventi senza conflitti   
 **TC7**: Verifica della pianificazione con rilevamento conflitti 
