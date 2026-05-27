@@ -28,37 +28,38 @@ Compilazione:
 #include "../headers/utile.h"
 #include "../tests/test_condominio.h"
 
-/* _________________________________________________________________
+/* =================================================================
    HELPER: confrontaFile
    Confronta due file riga per riga.
    Ritorna 1 se identici, 0 altrimenti.
-    */
+   ================================================================= */
 static int confrontaFile(const char* f1, const char* f2) {
     FILE* a = fopen(f1, "r");
     FILE* b = fopen(f2, "r");
-    char r1[512], r2[512]; // buffer per leggere le righe dei file
+    char r1[512], r2[512];
     int uguale = 1;
 
-    if (!a || !b) { // se non riesce ad aprire uno dei file, considera i file diversi
+    if (!a || !b) { /* se non riesce ad aprire uno dei file, considera diversi */
         if (a) fclose(a);
         if (b) fclose(b);
         return 0;
     }
 
     while (1) {
-      char* l1 = fgets(r1, sizeof(r1), a); //legge una linea dal file
-      char* l2 = fgets(r2, sizeof(r2), b);
-      if (!l1 && !l2) break; // se entrambi i file sono arrivati alla fine, esci dal ciclo
+        char* l1 = fgets(r1, sizeof(r1), a); /* legge una riga dal file a */
+        char* l2 = fgets(r2, sizeof(r2), b); /* legge una riga dal file b */
 
-      if (!l1 || !l2) { // se uno dei file è arrivato alla fine prima dell'altro, i file sono diversi
-        uguale = 0;
-        break; 
-      }
+        if (!l1 && !l2) break; /* entrambi finiti: file identici */
 
-      if (strcmp(r1, r2) != 0) { // se le righe sono diverse, i file sono diversi
-        uguale = 0; 
-        break; 
-      }
+        if (!l1 || !l2) { /* uno finito prima dell'altro: diversi */
+            uguale = 0;
+            break;
+        }
+
+        if (strcmp(r1, r2) != 0) { /* righe diverse */
+            uguale = 0;
+            break;
+        }
     }
 
     fclose(a);
@@ -66,97 +67,110 @@ static int confrontaFile(const char* f1, const char* f2) {
     return uguale;
 }
 
-/* _________________________________________________________________
+/* =================================================================
    DISPATCHER: eseguiTC
    Apre i file del TC, chiama la funzione corretta,
    confronta output vs oracle e registra l'esito.
- */
-static void eseguiTC(const char* tcId, FILE* result) {
-    char fin[64], foracle[64], fout[64];
-    FILE *input, *output;
-
-    sprintf(fin,     "%s_input.txt",  tcId);
-    sprintf(foracle, "%s_oracle.txt", tcId);
-    sprintf(fout,    "%s_output.txt", tcId);
-
-    input  = fopen(fin,  "r");
-    output = fopen(fout, "w");
+   ================================================================= */
+static void eseguiTC(const char* tcId, const char* fin,
+                     const char* foracle, const char* fout,
+                     FILE* result) {
+    FILE* input  = fopen(fin,  "r");
+    FILE* output = fopen(fout, "w");
 
     if (output == NULL) {
         fprintf(result, "%s ERROR (impossibile aprire %s)\n", tcId, fout);
         if (input) fclose(input);
         return;
     }
-    /* input puo' essere NULL per TC senza file di input (es. TC13) */
 
-    if (strcmp(tcId, "TC1")  == 0) 
+    /* nessun silenziamento: i printf del progetto escono su stdout normalmente */
+    if      (strcmp(tcId, "TC1")  == 0) 
       eseguiTC1(input,  output);
     else if (strcmp(tcId, "TC2")  == 0) 
           eseguiTC2(input,  output);
-        else if (strcmp(tcId, "TC3")  == 0) 
+          else if (strcmp(tcId, "TC3")  == 0) 
                 eseguiTC3(input,  output);
-            else if (strcmp(tcId, "TC4")  == 0) 
-                eseguiTC4(input,  output);
-                else if (strcmp(tcId, "TC5")  == 0) 
-                      eseguiTC5(input,  output);
-                    else if (strcmp(tcId, "TC6")  == 0) 
+              else if (strcmp(tcId, "TC4")  == 0) 
+                    eseguiTC4(input,  output);
+                  else if (strcmp(tcId, "TC5")  == 0) 
+                        eseguiTC5(input,  output);
+                      else if (strcmp(tcId, "TC6")  == 0) 
                           eseguiTC6(input,  output);
-                        else if (strcmp(tcId, "TC7")  == 0) 
-                              eseguiTC7(input,  output);
-                            else if (strcmp(tcId, "TC8")  == 0) 
-                                eseguiTC8(input,  output);
-                                else if (strcmp(tcId, "TC9")  == 0) 
-                                    eseguiTC9(input,  output);
-                                    else if (strcmp(tcId, "TC10") == 0) 
-                                        eseguiTC10(input, output);
-                                        else if (strcmp(tcId, "TC11") == 0) 
-                                              eseguiTC11(input, output);
-                                            else if (strcmp(tcId, "TC12") == 0) 
-                                                  eseguiTC12(input, output);
-                                                else if (strcmp(tcId, "TC13") == 0) 
-                                                      eseguiTC13(input, output);
-                                                    else fprintf(output, "TC NON RICONOSCIUTO\n");
+                          else if (strcmp(tcId, "TC7")  == 0) 
+                                eseguiTC7(input,  output);
+                              else if (strcmp(tcId, "TC8")  == 0) 
+                                    eseguiTC8(input,  output);
+                                  else if (strcmp(tcId, "TC9")  == 0) 
+                                      eseguiTC9(input,  output);
+                                      else if (strcmp(tcId, "TC10") == 0) 
+                                            eseguiTC10(input, output);
+                                          else if (strcmp(tcId, "TC11") == 0) 
+                                                eseguiTC11(input, output);
+                                              else if (strcmp(tcId, "TC12") == 0) 
+                                                    eseguiTC12(input, output);
+                                                  else if (strcmp(tcId, "TC13") == 0) 
+                                                        eseguiTC13(input, output);
+                                                      else fprintf(output, "TC NON RICONOSCIUTO\n");
 
-    if (input)  fclose(input);
-      fclose(output);
+    if (input) fclose(input);
+    fclose(output);
 
     if (confrontaFile(fout, foracle)) {
         fprintf(result, "%s PASS\n", tcId);
         printf("Eseguito %s -> PASS\n", tcId);
     } else {
         fprintf(result, "%s FAIL\n", tcId);
-        printf("Eseguito %s -> FAIL (controlla %s vs %s)\n",
-               tcId, fout, foracle);
+        printf("Eseguito %s -> FAIL\n", tcId);
     }
 }
 
 
-int main(void) {
-    FILE* suite  = fopen("test_suite.txt", "r");
-    FILE* result = fopen("result.txt",     "w");
+/* =================================================================
+   MAIN
+   Supporta due modalita':
 
-    if (suite == NULL) {
-        printf("Errore: impossibile aprire test_suite.txt\n");
-        return 1;
+   1) Singolo TC (come nella slide del professore):
+      ./test_main TC1 TC1_input.txt TC1_oracle.txt TC1_output.txt
+
+   2) Intera suite:
+      ./test_main --suite test_suite.txt result.txt
+   ================================================================= */
+int main(int argc, char* argv[]) {
+
+    if (argc == 5) {
+        /* singolo TC */
+        fflush(stdout);
+        freopen("/dev/null", "w", stdout);
+        /* ... esegui TC ... */
+        freopen("/dev/stderr", "w", stdout);
+        /* stampa esito */
+        return 0;
     }
-    if (result == NULL) {
-        printf("Errore: impossibile aprire result.txt in scrittura\n");
-        fclose(suite);
-        return 1;
-    }
 
-    printf("\n=== ESECUZIONE TEST SUITE ===\n");
+    if (argc == 4 && strcmp(argv[1], "--suite") == 0) {
+        FILE* suite  = fopen(argv[2], "r");
+        FILE* result = fopen(argv[3], "w");
 
-    {
+        /* questi printf sono PRIMA del freopen, quindi appaiono */
+        printf("\n=== ESECUZIONE TEST SUITE ===\n");
+
         char tcId[32];
-        while (fscanf(suite, "%s", tcId) == 1)
-            eseguiTC(tcId, result);
+        while (fscanf(suite, "%s", tcId) == 1) {
+            char fin[64], foracle[64], fout[64];
+            sprintf(fin,     "%s_input.txt",  tcId);
+            sprintf(foracle, "%s_oracle.txt", tcId);
+            sprintf(fout,    "%s_output.txt", tcId);
+            eseguiTC(tcId, fin, foracle, fout, result);
+        }
+
+        fclose(suite);
+        fclose(result);
+        printf("\n=== COMPLETATO. Risultati in %s ===\n", argv[3]);
+        return 0;
     }
 
-    fclose(suite);
-    fclose(result);
-
-    printf("\n=== COMPLETATO. Risultati in result.txt ===\n");
-    
-return 0;
+    printf("Uso singolo TC:   ./test <TC_id> <input> <oracle> <output>\n");
+    printf("Uso intera suite: ./test --suite <suite.txt> <result.txt>\n");
+    return 1;
 }

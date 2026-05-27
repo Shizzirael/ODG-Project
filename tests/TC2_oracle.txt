@@ -1,1 +1,1 @@
-TECNICO REGISTRATO OK id=123456789 nome=Mario Rossi
+123456789  Mario Rossi  Idraulico  richieste: 0

@@ -9,16 +9,24 @@
 #define TECNICI_H //CONTROLLA POI SE SONO LINKATE CORRETTAMENTE CON LE FUNZIONI
 #include "richieste.h"
 #include "tipi.h"
+#include "utile.h"
 
 #define ID_LEN 9
-
 //Struttura per rappresentare un tecnico con i suoi dati
 typedef struct {    
     char codice_ID[ID_LEN + 1];
-    char* nome;
+    char* nome; 
     Specializzazione specializzazione;
     bool disponibile;
 } Tecnico;
+
+// Definizione della struttura del nodo per la lista dei tecnici
+struct nodo_tec {
+    Tecnico* tecnico;
+    int n_richieste;
+    Richiesta* richieste_assegnate;  // lista già implementata in richiesta.c
+    struct nodo_tec* prossimo;
+};
 
 typedef struct nodo_tec *ListaTecnici; //struttura del nodo per la lista dei tecnici
 
@@ -81,6 +89,31 @@ Ritorna:
 - Un puntatore a un Tecnico con i dati inseriti dall'utente, oppure termina il programma in caso di errore di allocazione della memoria.
 */
 Tecnico* creaTecnico(FILE* f); 
+
+
+/*____________________________________________________________________________________________________
+Funzione: assegnarichiesteOrfane
+Assegna automaticamente le richieste orfane ai tecnici disponibili.
+
+Parametri:
+- tecnici: puntatore alla lista dei tecnici
+- richieste: puntatore alla lista delle richieste
+
+Pre-condizioni:
+- tecnici deve essere un puntatore valido a una lista di tecnici, o NULL se la lista è vuota.
+- richieste deve essere un puntatore valido a una lista di richieste, o NULL se la lista è vuota.
+- Le richieste orfane sono quelle che hanno lo stato APERTA e non hanno un tecnico assegnato (tecnico[0] == '\0').
+- I tecnici disponibili sono quelli che hanno il campo disponibile impostato a true 
+    e sono compatibili con la specializzazione richiesta dalle richieste orfane.
+
+Post-condizioni:
+- Le richieste orfane vengono assegnate ai tecnici disponibili compatibili, 
+    aggiornando i campi delle richieste e dei tecnici di conseguenza.
+
+Ritorna:
+- Nessun valore restituito (void), ma le richieste orfane vengono assegnate ai tecnici compatibili.
+*/
+void assegnaRichiesteOrfane(ListaTecnici* tecnici, Richiesta* richieste);
 
 
 /*___________________________________________________________________________________________________

@@ -5,14 +5,6 @@
 #include <ctype.h>
 #include "../headers/tecnici.h" 
 
-// Definizione della struttura del nodo per la lista dei tecnici
-struct nodo_tec {
-    Tecnico* tecnico;
-    int n_richieste;
-    Richiesta* richieste_assegnate;  // lista già implementata in richiesta.c
-    struct nodo_tec* prossimo;
-};
-
 //_____________________________________________________________________________________________________
 //Funzione per creare una nuova lista di tecnici
 ListaTecnici nuovaLista() {
@@ -49,81 +41,99 @@ Ritorna:
 Tecnico* creaTecnico(FILE* f)
 {
     char buffer_id[ID_LEN + 2]; 
-    char buffer_nome[1000];
+    char buffer_nome[50];
 
-    printf("Aggiungi un tecnico:\n");
     Tecnico* tec = malloc(sizeof(Tecnico));
     if(tec == NULL) {                     
-        printf("Errore di allocazione memoria\n");
         exit(EXIT_FAILURE);
     }
 
-    //Inserimento del CODICE ID, con rispettivo controllo di validità
-    while (1) {
-        printf("Codice ID (%d cifre): ", ID_LEN);
+    //Inserimento del CODICE ID
+   while (1) {
+        if (f == stdin)
+            printf("Inserisci il CODICE ID (%d cifre numeriche): ", ID_LEN);
 
-        if (fscanf(f, "%10s", buffer_id) != 1) {
-            while (fgetc(f) != '\n' && !feof(f));
-            continue;
+        leggiParola(buffer_id, ID_LEN + 2, f);
+        
+        // Se il file è finito improvvisamente, evita loop infiniti nei test
+        if (feof(f)) {
+            free(tec);
+            return NULL;
         }
 
-        while (fgetc(f) != '\n' && !feof(f)); // flush sempre, in ogni caso
-
-        if(solo_cifre(buffer_id, ID_LEN)) break;
-
-        printf("Errore: l'ID deve essere di esattamente %d cifre numeriche.\n", ID_LEN);
+        if (solo_cifre(buffer_id, ID_LEN) && strlen(buffer_id) == ID_LEN) {
+            break;
+        }
+        if (f == stdin) 
+            printf("ID non valido (richieste %d cifre). Riprova.\n", ID_LEN);
     }
-    strncpy(tec->codice_ID, buffer_id, ID_LEN);
+    strcpy(tec->codice_ID, buffer_id);
     tec->codice_ID[ID_LEN] = '\0';
 
-    //inserimento del NOME del tecnico, con rimozione del newline finale
-    printf("Nome: ");
-    fgets(buffer_nome, sizeof(buffer_nome), f);
-    if (buffer_nome[strlen(buffer_nome) - 1] == '\n') {
-        buffer_nome[strlen(buffer_nome) - 1] = '\0'; 
-    }
+    //Inserimento del NOME del tecnico, con rimozione del newline finale 
+    if (f == stdin)
+        printf("Inserisci il NOME del tecnico: ");
+
+    leggiRiga(buffer_nome, sizeof(buffer_nome), f);
+    
     tec->nome = malloc(strlen(buffer_nome) + 1); 
     if (tec->nome == NULL) {
-        printf("Errore di allocazione memoria\n");
+        free(tec); 
         exit(EXIT_FAILURE);
     }
     strcpy(tec->nome, buffer_nome);
 
     //inserimento della SPECIALIZZAZIONE, con controllo di validità
-  int scelta;
-
-while (1) {
-    printf("Specializzazione:\n");
-    printf("0) Idraulico, 1) Elettricista, 2) Muratore, 3) Ascensorista, 4) Generico\n");
-    printf("Scelta: ");
-
-    if (fscanf(f, "%d", &scelta) != 1) {
-        while (fgetc(f) != '\n' && !feof(f));
-        continue;
+    int scelta;
+   while (1) {
+        if (f == stdin) {
+            printf("Inserisci la SPECIALIZZAZIONE\n");
+            printf("(0=Idraulico 1=Elettricista 2=Muratore 3=Ascensorista 4=Generico):\n");
+        }
+        if (fscanf(f, "%d", &scelta) != 1) {
+            if (feof(f)) {
+                free(tec->nome);
+                free(tec);
+                return NULL;
+            }
+            // Pulisce il carattere errato se l'utente digita una lettera su stdin
+            flushInput(f); 
+            continue;
+        }
+        
+        if (scelta >= 0 && scelta <= 4) break;
+        
+        if (f == stdin)
+            printf("Errore: inserisci un numero valido tra 0 e 4.\n");
     }
-    while (fgetc(f) != '\n' && !feof(f));
+    tec->specializzazione = (Specializzazione)scelta;
 
-    if (scelta >= 0 && scelta <= 4) break;
-
-    printf("Errore: inserire un valore tra 0 e 4.\n");
-}
-tec->specializzazione = (Specializzazione)scelta; //Specializzazione è un enum in tipi.h
-    
     //inserimento della DISPONIBILITÀ
     int disp_temp;
-  while (1) {
-    printf("Il tecnico è disponibile? (1 per sì, 0 per no): ");
-    fscanf(f, "%d", &disp_temp);
-     while (fgetc(f) != '\n' && !feof(f)); // flush del buffer
-
-    if (disp_temp==1 || disp_temp==0) break;
+    while (1) {
+        if (f == stdin)
+            printf("Il tecnico è DISPONIBILE? (1 = SI, 0 = NO): ");
     
-    printf("Scelta non valida, inserire 0 o 1\n"); //Se la scelta non è valida, viene impostata la disponibilità a false
-  }
-  tec->disponibile = (disp_temp == 1);
+       if (fscanf(f, "%d", &disp_temp) != 1) {
+            if (feof(f)) {
+                free(tec->nome);
+                free(tec);
+                return NULL;
+            }
+            flushInput(f);
+            continue;
+        }
+        
+        if (disp_temp == 0 || disp_temp == 1)
+            break; 
+        
+        if (f == stdin) 
+            printf("Errore: inserisci 1 per SI o 0 per NO.\n\n");
+    }
+    tec->disponibile = (disp_temp == 1);
 
-  // Restituzione finale del tecnico creato con tutti i campi valorizzati correttamente
-return tec;
+    // Restituzione finale del tecnico creato con tutti i campi valorizzati correttamente
+    return tec;
 }
 
 
@@ -136,7 +146,7 @@ return tec;
  Ritorna:
 - Nessun valore restituito (void), ma le richieste orfane vengono assegnate ai tecnici compatibili
  */
-static void assegnaRichiesteOrfane(ListaTecnici* tecnici, Richiesta* richieste) {
+void assegnaRichiesteOrfane(ListaTecnici* tecnici, Richiesta* richieste) {
     Richiesta* r = richieste;
     int assegnate = 0;
 
@@ -344,29 +354,32 @@ ListaTecnici assegnaRichiesta(ListaTecnici testa, Specializzazione specializzazi
     if (r == NULL) return testa;
 
     struct nodo_tec* tecnico = trovaTecnico(testa, specializzazione);
-// se non trova un tecnico con la specializzazione richiesta, prova ad assegnare a un generico
+
+    // Se non trova il tecnico specializzato cerca per Generico
     if (tecnico == NULL && specializzazione != GENERICO) { 
         tecnico = trovaTecnico(testa, GENERICO);
     }
 
-    if (tecnico == NULL) {
-        printf("Nessun tecnico disponibile per: %s (nemmeno generico)\n", spec_to_string(specializzazione));
+    // Se non trova nemmeno generico
+    if (tecnico == NULL) 
         return testa;
-    }
 
+    // Assegnamento del nome del tecnico alla richiesta
     strncpy(r->tecnico, tecnico->tecnico->nome, MAX_STR - 1);
     r->tecnico[MAX_STR - 1] = '\0';
 
-    // Crea una copia del nodo per la lista del tecnico
+    // Inserisce la richiesta nella sotto-lista del tecnico e aumenta il contatore del carico
     inserisciRichiesta(&tecnico->richieste_assegnate, r);
     tecnico->n_richieste++;
-
-    // rimuovi e reinserisci per mantenere la lista ordinata per carico
+    
+    // Rimuove e reinserisce il nodo nella lista principale per mantenerla ordinata per carico
     testa = rimuoviNodo(testa, tecnico);
     testa = inserisciOrdinato(testa, tecnico);
 
     return testa;
+    
 }
+
 
 
 //-------------------------------------------------------------------------------------------------------

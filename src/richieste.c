@@ -70,7 +70,7 @@ Richiesta* creaRichiesta(int codice, const char* area, Specializzazione tipologi
     strncpy(nuova->data,        data,        10);
  
     nuova->area[MAX_STR - 1]        = '\0';
-    nuova->descrizione[MAX_STR - 1] = '\0';
+    nuova->descrizione[MAX_STR - 1] = '\0'; 
     nuova->data[10]                 = '\0';
  
     nuova->data_chiusura[0] = '\0';  //viene inizializzata a stringa vuota: sara' valorizzata solo quando la richiesta raggiunge lo stato CONCLUSA.
@@ -106,9 +106,9 @@ int aggiornaStato(Richiesta* r, StatoRichiesta nuovoStato) {
     }
  
     if (!transisioneValida(r->stato, nuovoStato)) {
-        printf("Errore: transizione non permessa da '%s' a '%s'.\n",
+        /*printf("Errore: transizione non permessa da '%s' a '%s'.\n",
                statoToString(r->stato),
-               statoToString(nuovoStato));
+               statoToString(nuovoStato));*/
         return 0;
     }
  
@@ -137,7 +137,7 @@ int aggiornaStato(Richiesta* r, StatoRichiesta nuovoStato) {
     }
 }
  
-    printf("Stato aggiornato con successo: '%s'.\n", statoToString(r->stato));
+    //printf("Stato aggiornato con successo: '%s'.\n", statoToString(r->stato));
     return 1;
 }
  

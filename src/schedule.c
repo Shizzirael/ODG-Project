@@ -134,7 +134,7 @@ void stampaStorico(Schedule root, FILE* out) {
             root->dataAppuntamento.ora_fine,
             root->tec->nome,
             root->req.codice);
-    }
+    } 
 
     stampaStorico(root->right, out);
 }

@@ -7,6 +7,7 @@
 #include "../headers/schedule.h"
 #include "../headers/utile.h"
 #include "../tests/test_condominio.h"
+
 /* Helper: costruisce una Data */
 static Data makeData(int anno, int mese, int giorno,
                      int ora_inizio, int ora_fine) {
@@ -76,32 +77,32 @@ static Tecnico* makeTecnico(const char* id, const char* nome,
      NESSUN CONFLITTO
      PIANIFICAZIONE OK
    ================================================================= */
-void eseguiTC6(FILE* input, FILE* output) {
+ void eseguiTC6(FILE* input, FILE* output) {
     int codice, anno, mese, giorno, ora_i, ora_f;
 
     fscanf(input, "%d", &codice);
-    fscanf(input, "%d %d %d %d %d",
-           &anno, &mese, &giorno, &ora_i, &ora_f);
+    fscanf(input, "%d %d %d %d %d", &anno, &mese, &giorno, &ora_i, &ora_f);
 
     {
-        Data d = makeData(anno, mese, giorno, ora_i, ora_f);
+        Data d;
+        d.anno = anno; d.mese = mese; d.giorno = giorno;
+        d.ora_inizio = ora_i; d.ora_fine = ora_f;
+
         Schedule albero = creaAlbero();
+        Richiesta* r = creaRichiesta(codice, "AreaTest", IDRAULICO,
+                                     "Desc", "15/05/2025", 3);
+        if (r == NULL) { fprintf(output, "ERRORE allocazione\n"); return; }
 
-        Richiesta r;
-        initR(&r, codice, "Appartamento_3B", IDRAULICO,
-              "Perdita_sotto_lavello", "10/05/2025", 3, APERTA, "");
-
-        /* Verifica che non ci siano conflitti prima di pianificare */
         if (verificaConflitti(albero, d) == 0) {
-            albero = planIntervento(albero, r, NULL, d);
-            fprintf(output,
-                    "Intervento pianificato: %02d/%02d/%d %02d:00-%02d:00\n",
-                    giorno, mese, anno, ora_i, ora_f);
+            fprintf(output, "NESSUN CONFLITTO\n");
+            albero = planIntervento(albero, *r, NULL, d);
+            fprintf(output, "PIANIFICAZIONE OK\n");
         } else {
             fprintf(output, "CONFLITTO INATTESO\n");
         }
 
         liberaAlbero(albero);
+        free(r);
     }
 }
 
@@ -119,38 +120,47 @@ void eseguiTC6(FILE* input, FILE* output) {
      PRIMO INTERVENTO PIANIFICATO
      CONFLITTO RILEVATO
    ================================================================= */
-void eseguiTC7(FILE* input, FILE* output) {
-    int codice;
-    int a1, m1, g1, oi1, of1;
-    int a2, m2, g2, oi2, of2;
+ void eseguiTC7(FILE* input, FILE* output) {
+    int cod1, a1, m1, g1, oi1, of1;
+    int cod2, a2, m2, g2, oi2, of2;
 
-    fscanf(input, "%d", &codice);
-    fscanf(input, "%d %d %d %d %d", &a1, &m1, &g1, &oi1, &of1);
-    fscanf(input, "%d %d %d %d %d", &a2, &m2, &g2, &oi2, &of2);
+    fscanf(input, "%d %d %d %d %d %d", &cod1, &a1, &m1, &g1, &oi1, &of1);
+    fscanf(input, "%d %d %d %d %d %d", &cod2, &a2, &m2, &g2, &oi2, &of2);
 
     {
-        Data d1 = makeData(a1, m1, g1, oi1, of1);
-        Data d2 = makeData(a2, m2, g2, oi2, of2);
+        Data d1; d1.anno=a1; d1.mese=m1; d1.giorno=g1;
+                 d1.ora_inizio=oi1; d1.ora_fine=of1;
+        Data d2; d2.anno=a2; d2.mese=m2; d2.giorno=g2;
+                 d2.ora_inizio=oi2; d2.ora_fine=of2;
 
         Schedule albero = creaAlbero();
+        Richiesta* r1 = creaRichiesta(cod1, "AreaA", IDRAULICO,
+                                      "Desc1", "15/05/2025", 3);
+        Richiesta* r2 = creaRichiesta(cod2, "AreaB", ELETTRICISTA,
+                                      "Desc2", "15/05/2025", 5);
+        if (r1 == NULL || r2 == NULL) {
+            fprintf(output, "ERRORE allocazione\n");
+            if (r1) free(r1);
+            if (r2) free(r2);
+            liberaAlbero(albero);
+            return;
+        }
 
-        Richiesta r;
-        initR(&r, codice, "Appartamento_3B", IDRAULICO,
-              "Perdita", "10/05/2025", 3, APERTA, "");
+        /* primo inserimento: nessun conflitto atteso */
+        if (verificaConflitti(albero, d1) == 0) {
+            albero = planIntervento(albero, *r1, NULL, d1);
+            fprintf(output, "PRIMO INTERVENTO PIANIFICATO\n");
+        }
 
-        /* Primo inserimento: nessun conflitto atteso */
-        albero = planIntervento(albero, r, NULL, d1);
-        fprintf(output,
-                "Intervento pianificato: %02d/%02d/%d %02d:00-%02d:00\n",
-                g1, m1, a1, oi1, of1);
-
-        /* Secondo tentativo: fascia sovrapposta, conflitto atteso */
+        /* secondo inserimento: fascia sovrapposta, conflitto atteso */
         if (verificaConflitti(albero, d2) == 1)
-            fprintf(output, "Conflitto rilevato: fascia oraria occupata\n");
+            fprintf(output, "CONFLITTO RILEVATO\n");
         else
-            fprintf(output, "NESSUN CONFLITTO (ERRORE)\n");
+            fprintf(output, "NESSUN CONFLITTO INATTESO\n");
 
         liberaAlbero(albero);
+        free(r1);
+        free(r2);
     }
 }
 
@@ -160,7 +170,8 @@ void eseguiTC7(FILE* input, FILE* output) {
    TC12 - Storico interventi conclusi (visita in-order BST)
 
    Verifica: stampaStorico() produce solo i nodi CONCLUSA
-   in ordine cronologico.
+   in ordine cronologico. Il Tecnico e' su stack perche'
+   planIntervento vuole solo Tecnico* e non lo dealloca.
 
    TC12_input.txt:
      1 2025 5 15 9 11
@@ -168,35 +179,62 @@ void eseguiTC7(FILE* input, FILE* output) {
    TC12_oracle.txt:
      15/05/2025 11:00 | Tecnico: MarioRossi | ID: 1
    ================================================================= */
-void eseguiTC12(FILE* input, FILE* output) {
+ void eseguiTC12(FILE* input, FILE* output) {
     int codice, anno, mese, giorno, ora_i, ora_f;
-    fscanf(input, "%d %d %d %d %d %d",
-           &codice, &anno, &mese, &giorno, &ora_i, &ora_f);
+    if (fscanf(input, "%d %d %d %d %d %d",
+           &codice, &anno, &mese, &giorno, &ora_i, &ora_f) != 6) return;
 
     {
-        Data d = makeData(anno, mese, giorno, ora_i, ora_f);
+      Data d;
+      d.anno = anno; 
+      d.mese = mese; 
+      d.giorno = giorno;
+      d.ora_inizio = ora_i; 
+      d.ora_fine = ora_f;
 
-        /* Tecnico su stack: nome senza spazi per semplicita'
-         * (lo storico stampa tec->nome direttamente) */
-        Tecnico* tec = makeTecnico("123456789", "MarioRossi", IDRAULICO);
-        if (!tec) { fprintf(output, "ERRORE allocazione tecnico\n"); return; }
+        //Allocazione sicura del Tecnico nell'Heap
+        Tecnico* tec = malloc(sizeof(Tecnico));
+        if (!tec) return;
 
-        Richiesta r;
-        initR(&r, codice, "Appartamento_3B", IDRAULICO,
-              "Perdita", "10/05/2025", 3, APERTA, "");
+        strncpy(tec->codice_ID, "123456789", ID_LEN);
+        tec->codice_ID[ID_LEN] = '\0';
+        tec->nome = malloc(strlen("MarioRossi") + 1);
+        strcpy(tec->nome, "MarioRossi");
+        tec->specializzazione = IDRAULICO;
+        tec->disponibile = 1;
 
+        //Inizializzazione manuale e sicura della Richiesta nell'Heap
+        Richiesta* r = malloc(sizeof(Richiesta));
+        if (!r) { free(tec->nome); free(tec); return; }
+        
+        r->codice = codice; 
+        r->tipologia = IDRAULICO;
+        r->urgenza = 3;
+        r->stato = APERTA;
+        r->next = NULL;
+
+        strncpy(r->area, "Appartamento_3B", MAX_STR - 1);  
+            r->area[MAX_STR - 1] = '\0';
+        strncpy(r->descrizione, "Perdita", MAX_STR - 1);  
+            r->descrizione[MAX_STR - 1] = '\0';
+        strncpy(r->data, "10/05/2025", 10);              
+            r->data[10] = '\0';
+            r->tecnico[0] = '\0';
+            r->data_chiusura[0] = '\0';
+
+        //Esecuzione del flusso del codice principale 
         Schedule albero = creaAlbero();
-        albero = planIntervento(albero, r, tec, d);
+        albero = planIntervento(albero, *r, tec, d);
 
-        /* Porta il nodo BST a CONCLUSA con la data di chiusura */
         aggiornaStatoNelBST(albero, codice, CONCLUSA, "20/05/2025");
 
-        /* stampaStorico scrive direttamente nel file di output */
         stampaStorico(albero, output);
 
+        //Pulizia totale della memoria per non lasciare Leak
         liberaAlbero(albero);
         free(tec->nome);
         free(tec);
+        free(r);
     }
 }
 
@@ -206,78 +244,70 @@ void eseguiTC12(FILE* input, FILE* output) {
    Verifica: generaReport(), tempoMedioCompletamento(),
    trovaTecnicoPiuAttivo(), interventiPerTipologia(),
    areaPiuProblematica().
+   Setup hardcoded per garantire un oracle riproducibile:
+   2 richieste idraulico, r1 conclusa (apertura 10/05, chiusura
+   20/05 = 10 giorni), r2 ancora aperta.
 
-   Setup: 2 richieste idraulico, 1 conclusa (10 giorni), 1 aperta.
-
-   TC13_input.txt:
-     (nessun parametro: la struttura di test e' fissa per garantire
-      un oracle riproducibile indipendente dall'ordine di esecuzione)
+   TC13_input.txt: (vuoto, nessun parametro variabile)
 
    TC13_oracle.txt:
      Aperti: 1
      Conclusi: 1
      Tempo medio: 10 giorni
    ================================================================= */
-void eseguiTC13(FILE* input, FILE* output) {
-    (void)input; /* nessun parametro variabile */
+ void eseguiTC13(FILE* input, FILE* output) {
+    (void)input; /* setup hardcoded per riproducibilita' dell'oracle */
 
     {
-        /* Lista richieste per areaPiuProblematica */
+        /* setup lista richieste */
         Richiesta* lista = NULL;
-        Richiesta* req1 = creaRichiesta(1, "Appartamento_3B", IDRAULICO,
-                                         "Perdita",   "10/05/2025", 3);
-        Richiesta* req2 = creaRichiesta(2, "Appartamento_3B", IDRAULICO,
-                                         "Rubinetto", "01/05/2025", 2);
-        if (!req1 || !req2) {
+        Richiesta* r1 = creaRichiesta(1, "Appartamento_3B", IDRAULICO,
+                                      "Perdita", "10/05/2025", 3);
+        Richiesta* r2 = creaRichiesta(2, "Appartamento_3B", IDRAULICO,
+                                      "Rubinetto", "01/05/2025", 2);
+        if (r1 == NULL || r2 == NULL) {
             fprintf(output, "ERRORE allocazione\n");
-            if (req1) free(req1);
-            if (req2) free(req2);
+            if (r1) free(r1);
+            if (r2) free(r2);
             return;
         }
-        inserisciRichiesta(&lista, req1);
-        inserisciRichiesta(&lista, req2);
+        inserisciRichiesta(&lista, r1);
+        inserisciRichiesta(&lista, r2);
 
-        Tecnico* tec = makeTecnico("123456789", "MarioRossi", IDRAULICO);
-        if (!tec) { fprintf(output, "ERRORE allocazione tecnico\n");
-                    liberaListaRichieste(lista); return; }
+        /* setup BST con 2 interventi */
+        Tecnico tec;
+        strncpy(tec.codice_ID, "123456789", ID_LEN);
+        tec.codice_ID[ID_LEN] = '\0';
+        tec.nome = "MarioRossi";
+        tec.specializzazione = IDRAULICO;
+        tec.disponibile = 1;
 
         Schedule albero = creaAlbero();
+        Data d1; d1.anno=2025; d1.mese=5; d1.giorno=15;
+                 d1.ora_inizio=9;  d1.ora_fine=11;
+        Data d2; d2.anno=2025; d2.mese=5; d2.giorno=20;
+                 d2.ora_inizio=14; d2.ora_fine=16;
 
-        Richiesta r1, r2;
-        initR(&r1, 1, "Appartamento_3B", IDRAULICO,
-              "Perdita",   "10/05/2025", 3, CONCLUSA, "20/05/2025");
-        initR(&r2, 2, "Appartamento_3B", IDRAULICO,
-              "Rubinetto", "01/05/2025", 2, APERTA,   "");
+        albero = planIntervento(albero, *r1, &tec, d1);
+        albero = planIntervento(albero, *r2, &tec, d2);
 
-        Data d1 = makeData(2025, 5, 15, 9,  11);
-        Data d2 = makeData(2025, 5, 20, 14, 16);
-
-        albero = planIntervento(albero, r1, tec, d1);
-        albero = planIntervento(albero, r2, tec, d2);
-
-        /* Sincronizza stato CONCLUSA nel BST */
+        /* r1 -> CONCLUSA: 10/05 apertura, 20/05 chiusura = 10 giorni */
         aggiornaStatoNelBST(albero, 1, CONCLUSA, "20/05/2025");
 
-        /* Calcola e scrivi report */
-        {
-            int aperti = 0, conclusi = 0;
-            generaReport(albero, &aperti, &conclusi);
-            fprintf(output, "Aperti: %d\n",   aperti);
-            fprintf(output, "Conclusi: %d\n", conclusi);
-        }
+        /* calcoli e scrittura su output */
+        int aperti = 0, conclusi = 0;
+        generaReport(albero, &aperti, &conclusi);
+        fprintf(output, "Aperti: %d\n",   aperti);
+        fprintf(output, "Conclusi: %d\n", conclusi);
 
-        {
-            int somma = 0, count = 0;
-            tempoMedioCompletamento(albero, &somma, &count);
-            if (count > 0)
-                fprintf(output, "Tempo medio: %d giorni\n", somma / count);
-            else
-                fprintf(output, "Tempo medio: N/D\n");
-        }
+        int somma = 0, count = 0;
+        tempoMedioCompletamento(albero, &somma, &count);
+        if (count > 0)
+            fprintf(output, "Tempo medio: %d giorni\n", somma / count);
+        else
+            fprintf(output, "Tempo medio: N/D\n");
 
         liberaAlbero(albero);
         liberaListaRichieste(lista);
-        free(tec->nome);
-        free(tec);
     }
 }
