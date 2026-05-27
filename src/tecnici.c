@@ -202,7 +202,7 @@ void liberaLista(ListaTecnici testa) {
     while (testa != NULL) {
         temp = testa;
         testa = testa->prossimo;
-        liberaListaRichieste(temp->richieste_assegnate);
+        //liberaListaRichieste(temp->richieste_assegnate);
         free(temp->tecnico->nome); 
         free(temp->tecnico);
         free(temp);
