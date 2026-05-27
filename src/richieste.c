@@ -114,29 +114,6 @@ int aggiornaStato(Richiesta* r, StatoRichiesta nuovoStato) {
  
     r->stato = nuovoStato;
  
-    //Se la richiesta viene chiusa, registriamo la data di chiusura. Cosa necessaria per calcolare il tempo medio di completamento nel report finale.
-    if (nuovoStato == CONCLUSA) {
-    int g, m, a;
-    while (1) {
-        printf("Inserisci la data di chiusura (GG/MM/AAAA): ");
-        //flush preventivo per eliminare il '\n' residuo lasciato da un scanf("%d") chiamato in precedenza nel menu. 
-        while (getchar() != '\n');
-        scanf("%10s", r->data_chiusura);
-        while (getchar() != '\n');
-        r->data_chiusura[10] = '\0';
-        if (sscanf(r->data_chiusura, "%d/%d/%d", &g, &m, &a) != 3 ||
-            g < 1 || g > 31 || m < 1 || m > 12 || a < 2000 || a > 2100) {
-            printf("  Formato non valido. Usa GG/MM/AAAA (es. 15/05/2026).\n");
-            continue;
-        }
-        if (dataInGiorni(r->data_chiusura) < dataInGiorni(r->data)) {
-            printf("  Errore: la data di chiusura non puo' essere antecedente alla data di apertura (%s).\n", r->data);
-            continue;
-        }
-        break;
-    }
-}
- 
     //printf("Stato aggiornato con successo: '%s'.\n", statoToString(r->stato));
     return 1;
 }
@@ -207,7 +184,20 @@ void menuAggiornaStato(Richiesta* testa) {
         else if (scelta == 2) aggiornaStato(r, ANNULLATA);
         else                  printf("Scelta non valida.\n");
     } else if (r->stato == IN_LAVORAZIONE) {
-        if      (scelta == 1) aggiornaStato(r, CONCLUSA);
+       if (scelta == 1) {
+char dataChiusura[11];
+int g, m, a;
+while (1) {
+leggiData(dataChiusura);
+if (sscanf(dataChiusura, "%d/%d/%d", &g, &m, &a) == 3 &&
+dataInGiorni(dataChiusura) >= dataInGiorni(r->data))
+break;
+printf(" Data antecedente all'apertura (%s). Riprova.\n", r->data);
+}
+strncpy(r->data_chiusura, dataChiusura, 10);
+r->data_chiusura[10] = '\0';
+aggiornaStato(r, CONCLUSA);
+}
         else if (scelta == 2) aggiornaStato(r, ANNULLATA);
         else                  printf("Scelta non valida.\n");
     }

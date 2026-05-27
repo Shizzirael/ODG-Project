@@ -131,7 +131,7 @@ void stampaStorico(Schedule root, FILE* out) {
             root->dataAppuntamento.giorno,
             root->dataAppuntamento.mese,
             root->dataAppuntamento.anno,
-            root->dataAppuntamento.ora_fine,
+            root->dataAppuntamento.ora_inizio,
             root->tec->nome,
             root->req.codice);
     } 

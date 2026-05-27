@@ -125,15 +125,12 @@ static void eseguiTC(const char* tcId, const char* fin,
    ================================================================= */
 int main(int argc, char* argv[]) {
 
-    if (argc == 5) {
-        /* singolo TC */
-        fflush(stdout);
-        freopen("/dev/null", "w", stdout);
-        /* ... esegui TC ... */
-        freopen("/dev/stderr", "w", stdout);
-        /* stampa esito */
+      if (argc == 5) {
+        FILE* result = stdout;
+        eseguiTC(argv[1], argv[2], argv[3], argv[4], result);
         return 0;
-    }
+        }
+
 
     if (argc == 4 && strcmp(argv[1], "--suite") == 0) {
         FILE* suite  = fopen(argv[2], "r");
