@@ -38,7 +38,7 @@ typedef struct {
 } PriorityQueue;
  
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: creaRichiesta
 Alloca in memoria una nuova richiesta con i dati forniti.
  
@@ -63,7 +63,7 @@ Ritorna:
 */
 Richiesta* creaRichiesta(int codice, const char* area, Specializzazione tipologia, const char* descrizione, const char* data, int urgenza);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: inserisciRichiesta
 Aggiunge una richiesta in coda alla lista, mantenendo l'ordine cronologico di inserimento.
  
@@ -83,7 +83,7 @@ Ritorna:
 */
 void inserisciRichiesta(Richiesta** testa, Richiesta* nuova);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: aggiornaStato
 Modifica lo stato di una richiesta solo se la transizione e' valida.
  
@@ -103,7 +103,7 @@ Ritorna:
 */
 int aggiornaStato(Richiesta* r, StatoRichiesta nuovoStato);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: aggiornaStatoDaCodice
 Cerca la richiesta per codice nella lista e aggiorna il suo stato.
  
@@ -124,7 +124,7 @@ Ritorna:
 */
 int aggiornaStatoDaCodice(Richiesta* testa, int codice, StatoRichiesta nuovoStato);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: menuAggiornaStato
 Interfaccia da terminale per aggiornare lo stato di una richiesta tramite input utente.
  
@@ -142,7 +142,7 @@ Ritorna:
 */
 void menuAggiornaStato(Richiesta* testa);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: cercaPerCodice
 Ricerca ricorsiva nella lista per codice univoco.
  
@@ -161,7 +161,7 @@ Ritorna:
 */
 Richiesta* cercaPerCodice(Richiesta* testa, int codice);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: cercaEStampaPerCodice
 Cerca una richiesta per codice e ne stampa il dettaglio, oppure un messaggio di errore.
  
@@ -180,7 +180,7 @@ Ritorna:
 */
 void cercaEStampaPerCodice(Richiesta* testa, int codice);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: cercaPerTipologia
 Ricerca ricorsiva nella lista: stampa tutti i nodi con la tipologia indicata.
  
@@ -199,7 +199,7 @@ Ritorna:
 */
 void cercaPerTipologia(Richiesta* testa, Specializzazione tipologia);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: stampaDettaglioRichiesta
 Stampa tutti i campi di una singola richiesta in formato leggibile.
  
@@ -217,7 +217,7 @@ Ritorna:
 */
 void stampaDettaglioRichiesta(Richiesta* r);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: stampaRichiesteFiltrate
 Stampa le richieste che corrispondono al filtro numerico specificato.
  
@@ -238,7 +238,7 @@ Ritorna:
 */
 void stampaRichiesteFiltrate(Richiesta* testa, int valore, TipoFiltro tipoFiltro);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: stampaRichiestePerStringa
 Stampa le richieste che corrispondono al filtro testuale specificato.
  
@@ -259,7 +259,7 @@ Ritorna:
 */
 void stampaRichiestePerStringa(Richiesta* testa, const char* valore, TipoFiltro tipoFiltro);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: stampaRichiestePerTipologia
 Stampa tutte le richieste con la tipologia specificata.
  
@@ -278,7 +278,7 @@ Ritorna:
 */
 void stampaRichiestePerTipologia(Richiesta* testa, Specializzazione tipologia);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: stampaRichiestePerTecnico
 Stampa tutte le richieste assegnate al tecnico indicato.
  
@@ -297,7 +297,7 @@ Ritorna:
 */
 void stampaRichiestePerTecnico(Richiesta* testa, const char* nomeTecnico);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: areaPiuProblematica
 Trova e stampa l'area con il maggior numero di richieste presenti in lista.
  
@@ -316,7 +316,7 @@ Ritorna:
 */
 void areaPiuProblematica(Richiesta* testa);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: liberaListaRichieste
 Libera tutta la memoria allocata dalla lista con approccio ricorsivo.
  
@@ -335,7 +335,7 @@ Ritorna:
 void liberaListaRichieste(Richiesta* testa);
  
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: initPQ
 Inizializza la coda a priorita', producendo un heap vuoto.
  
@@ -353,7 +353,7 @@ Ritorna:
 */
 void initPQ(PriorityQueue* pq);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: emptyPQ
 Verifica se la coda a priorita' e' vuota.
  
@@ -372,7 +372,7 @@ Ritorna:
 */
 int emptyPQ(const PriorityQueue* pq);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: fullPQ
 Verifica se la coda a priorita' ha raggiunto la capacita' massima (MAX_HEAP).
  
@@ -391,7 +391,7 @@ Ritorna:
 */
 int fullPQ(const PriorityQueue* pq);
  
-/*____________________________________________________________________________________________________
+/*___________________________________________________________________________________________________
 Funzione: insertPQ
 Inserisce una richiesta nella coda a priorita'.
 L'elemento viene aggiunto come foglia e fatto risalire (upheap) finche'
@@ -416,7 +416,7 @@ Ritorna:
 */
 int insertPQ(PriorityQueue* pq, Richiesta* r);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: deleteMax
 Estrae e restituisce la richiesta con urgenza massima (radice heap[1]).
 La foglia piu' a destra viene spostata in radice e fatta scendere (downheap)
@@ -440,7 +440,7 @@ Ritorna:
 */
 Richiesta* deleteMax(PriorityQueue* pq);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: peekMax
 Restituisce (senza rimuovere) la richiesta con urgenza massima.
  
@@ -459,7 +459,7 @@ Ritorna:
 */
 Richiesta* peekMax(const PriorityQueue* pq);
  
-/*____________________________________________________________________________________________________
+/*
 Funzione: stampaHeap
 Stampa tutte le richieste presenti nell'heap in ordine decrescente di urgenza,
 operando su una copia temporanea per non alterare la struttura originale.
