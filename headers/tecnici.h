@@ -6,7 +6,7 @@
               utilizzando una lista concatenata.
 */
 #ifndef TECNICI_H
-#define TECNICI_H //CONTROLLA POI SE SONO LINKATE CORRETTAMENTE CON LE FUNZIONI
+#define TECNICI_H
 #include "richieste.h"
 #include "tipi.h"
 #include "utile.h"

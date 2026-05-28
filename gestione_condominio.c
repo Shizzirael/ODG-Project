@@ -8,7 +8,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "headers/tecnici.h"
 #include "headers/richieste.h"
 #include "headers/schedule.h"

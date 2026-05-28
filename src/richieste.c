@@ -47,7 +47,7 @@ int transisioneValida(StatoRichiesta attuale, StatoRichiesta nuovo) {
     }
 }
 
-// Converte una data "GG/MM/AAAA" in giorni per confronti cronologici. AGGIUNTA LUCIA
+// Converte una data "GG/MM/AAAA" in giorni per confronti cronologici
 static int dataInGiorni(const char* data) {
     int g, m, a;
     if (sscanf(data, "%d/%d/%d", &g, &m, &a) != 3) return -1;

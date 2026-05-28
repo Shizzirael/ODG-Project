@@ -240,7 +240,28 @@ Ritorna:
 */
 void liberaAlbero(Schedule root);
 
-//TODO aggiungi specifiche 
+/*_____________________________________________________________________________________________________  
+Funzione; aggiornaStatoNelBST
+Trova un intervento tramite ID e ne aggiorna lo stato.
+Se lo stato che gli passi è CONCLUSA, setta anche la data di chiusura.
+
+Parametri:
+- root: la radice dell'albero
+- codice: l'ID dell'intervento da modificare
+- nuovoStato: lo stato da assegnare (es. CONCLUSA, PIANIFICATA)
+- dataChiusura: stringa con la data in cui è stato chiuso (può essere NULL se lo stato non è CONCLUSA)
+
+Pre-condizioni:
+-root deve esistere come albero
+-codice è un ID valido
+-nuovoStato deve essere del tipo StatoRichiesta successivo a quello preimpostato di root
+(a meno che non sia CONCLUSA)
+-dataChiusura è una data più recente rispetto alla data di inizio
+
+Ritorna:
+- 1 se trova l'intervento e lo aggiorna
+- 0 se l'intervento con quel codice non esiste
+*/
 int aggiornaStatoNelBST(Schedule root, int codice, StatoRichiesta nuovoStato, const char* dataChiusura);
 
 #endif
