@@ -166,15 +166,13 @@ int aggiornaStato(Richiesta* r, StatoRichiesta nuovoStato) {
     }
  
     if (!transisioneValida(r->stato, nuovoStato)) {
-        printf("Errore: transizione non permessa da '%s' a '%s'.\n",
                statoToString(r->stato),
-               statoToString(nuovoStato));
+               statoToString(nuovoStato);
         return 0;
     }
  
     r->stato = nuovoStato;
  
-    printf("Stato aggiornato con successo: '%s'.\n", statoToString(r->stato));
     return 1;
 }
 
