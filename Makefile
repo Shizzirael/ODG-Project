@@ -1,8 +1,8 @@
 condominio: gestione_condominio.o schedule.o richieste.o tecnici.o utile.o
 	gcc -Wall -g -std=c99 -o condominio gestione_condominio.o schedule.o richieste.o tecnici.o utile.o
 
-gestione_condominio.o: gestione_condominio.c headers/schedule.h headers/richieste.h headers/tecnici.h headers/tipi.h headers/utile.h
-	gcc -Wall -g -std=c99 -c gestione_condominio.c -o gestione_condominio.o
+gestione_condominio.o: src/gestione_condominio.c headers/schedule.h headers/richieste.h headers/tecnici.h headers/tipi.h headers/utile.h
+	gcc -Wall -g -std=c99 -c src/gestione_condominio.c -o gestione_condominio.o
 
 schedule.o: src/schedule.c headers/schedule.h
 	gcc -Wall -g -std=c99 -c src/schedule.c -o schedule.o

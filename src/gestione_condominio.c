@@ -8,10 +8,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "headers/tecnici.h"
-#include "headers/richieste.h"
-#include "headers/schedule.h"
-#include "headers/utile.h"
+#include "../headers/tecnici.h"
+#include "../headers/richieste.h"
+#include "../headers/schedule.h"
+#include "../headers/utile.h"
 
 /*_____________________________________________________________________________________________________  
 Gestisce l'inserimento di una nuova richiesta da parte dell'utente.
